@@ -1,0 +1,32 @@
+package components
+
+import "encoder/app"
+
+templ Navbar() {
+	<nav class="navbar" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item title" href="/">
+				{ app.Name }
+			</a>
+		</div>
+		<div id="navbarBasicExample" class="navbar-menu">
+			<div class="navbar-start">
+				<a href="/" class="navbar-item">
+					Home
+				</a>
+				<a class="navbar-item">
+					Test
+				</a>
+			</div>
+			<div class="navbar-end">
+				<div class="navbar-item">
+					<div class="buttons">
+						<a class="button is-light">
+							Log in
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+}

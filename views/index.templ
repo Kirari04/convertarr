@@ -1,0 +1,12 @@
+package views
+
+import (
+	"encoder/app"
+	"encoder/layouts"
+)
+
+templ Index() {
+	@layouts.Default("Encoderr") {
+		<div>Hello, the server is running on Port { app.Port }</div>
+	}
+}
