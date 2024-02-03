@@ -109,11 +109,15 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 
 templ Index(Error error, Title string, resources t.Resources) {
 	@layouts.Default(Error, Title) {
-		<div>Hello, the server is running on Port { app.Port }</div>
-		<div style="max-height: 400px;">
-			<div id="chart"></div>
-			<div id="chart2"></div>
-		</div>
+		<article class="message">
+			<div class="message-header">
+				<p>Server Resource Ussage</p>
+			</div>
+			<div class="message-body">
+				<div id="chart"></div>
+				<div id="chart2"></div>
+			</div>
+		</article>
 		@chartData(resources, app.MaxResourcesHistory)
 	}
 }
