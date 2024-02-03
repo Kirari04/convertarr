@@ -13,9 +13,117 @@ import "bytes"
 import (
 	"encoder/app"
 	"encoder/layouts"
+	"encoder/t"
 )
 
-func Index(Error error, Title string) templ.Component {
+func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_chartData_f0dd`,
+		Function: `function __templ_chartData_f0dd(resources, maxResourcesHistory){var options = {
+		chart: {
+			type: "line",
+			height: "300px",
+
+		},
+		series: [
+			{
+				name: "Cpu Ussage",
+				data: resources.Cpu,
+			},
+			{
+				name: "Memory Ussage",
+				data: resources.Mem,
+			}
+		],
+		xaxis: {
+			categories: Array.from(Array(maxResourcesHistory).keys()),
+		},
+		yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return ` + "`" + `${Math.round(value)} %` + "`" + `
+                },
+            },
+            max: 100,
+        },
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return ` + "`" + `${Math.round(value)} %` + "`" + `
+                },
+            },
+        }
+	}
+	var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+	chart.render();
+
+	var options2 = {
+		chart: {
+			type: "line",
+			height: "300px",
+
+		},
+		series: [
+			{
+				name: "NetOut",
+				data: resources.NetOut,
+			},
+			{
+				name: "NetIn",
+				data: resources.NetIn,
+			}
+		],
+		xaxis: {
+			categories: Array.from(Array(maxResourcesHistory).keys()),
+		},
+		yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return ` + "`" + `${humanFileSize(value)}/s` + "`" + `
+                },
+            },
+        },
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return ` + "`" + `${humanFileSize(value)}/s` + "`" + `
+                },
+            },
+        }
+	}
+	var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+
+	chart2.render();
+
+	function humanFileSize(bytes, si = false, dp = 1) {
+		const thresh = si ? 1000 : 1024;
+
+		if (Math.abs(bytes) < thresh) {
+			return bytes + ' B';
+		}
+
+		const units = si
+			? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+			: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+		let u = -1;
+		const r = 10 ** dp;
+
+		do {
+			bytes /= thresh;
+			++u;
+		} while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+
+		return bytes.toFixed(dp) + ' ' + units[u];
+	}
+}`,
+		Call:       templ.SafeScript(`__templ_chartData_f0dd`, resources, maxResourcesHistory),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_f0dd`, resources, maxResourcesHistory),
+	}
+}
+
+func Index(Error error, Title string, resources t.Resources) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -41,13 +149,17 @@ func Index(Error error, Title string) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(app.Port)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 9, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 111, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div style=\"max-height: 400px;\"><div id=\"chart\"></div><div id=\"chart2\"></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = chartData(resources, app.MaxResourcesHistory).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
