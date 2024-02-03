@@ -67,7 +67,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Basic-Auth</label></div></div><br><h2 class=\"subtitle is-4\">Folder Scanning</h2><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableAutomaticScanns\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Basic-Auth</label></div></div><div class=\"field\"><a href=\"/setting/user\" class=\"button is-info\">User Settings</a></div><br><h2 class=\"subtitle is-4\">Folder Scanning</h2><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableAutomaticScanns\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -107,7 +107,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.EscapeString(fmt.Sprintf("%s", time.Duration(min)*time.Minute)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting.templ`, Line: 68, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting.templ`, Line: 73, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {

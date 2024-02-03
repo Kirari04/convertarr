@@ -3,26 +3,47 @@ package views
 import (
 	"encoder/layouts"
 	"encoder/t"
-	"encoder/helper"
 )
 
-templ SettingUser(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
+templ SettingUser(Ctx t.TemplCtx, Title string, v t.SettingUserValidation) {
 	@layouts.Default(Ctx, Title) {
 		<article class="message">
 			<div class="message-header">
 				<p>Setting - User</p>
 			</div>
-			<form method="POST" action="/setting" class="message-body">
-				<h2 class="subtitle is-4">Add User</h2>
+			<form method="POST" action="/setting/user" class="message-body">
 				<div class="field">
-					<label class="checkbox">
+					<a href="/setting" class="button is-info">
+						Back to Settings
+					</a>
+				</div>
+				<div class="field">
+					<label class="label">Username</label>
+					<div class="control">
 						<input
-							type="checkbox"
-							name="EnableAuthentication"
-							checked?={ helper.PStrToStr(v.EnableAuthentication) == "checked" || helper.PStrToStr(v.EnableAuthentication) == "on" }
+							class="input"
+							type="text"
+							autocomplete="username"
+							placeholder="Username"
+							name="Username"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(v.Username) }
 						/>
-						Enable Authentication
-					</label>
+					</div>
+				</div>
+				<div class="field">
+					<label class="label">Password</label>
+					<div class="control">
+						<input
+							class="input"
+							type="password"
+							autocomplete="new-password"
+							placeholder="Password"
+							name="Password"
+							style="max-width: 400px;"
+						/>
+					</div>
+					<p class="help">Leave field empty if no change</p>
 				</div>
 				<div class="field">
 					<div class="control">

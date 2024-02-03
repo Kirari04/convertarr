@@ -33,6 +33,8 @@ func Serve() {
 	e.POST("/setup", handler.PostSetup)
 	e.GET("/setting", handler.GetSetting)
 	e.POST("/setting", handler.PostSetting)
+	e.GET("/setting/user", handler.GetSettingUser)
+	e.POST("/setting/user", handler.PostSettingUser)
 	e.GET("/login", handler.GetLogin)
 	e.POST("/login", handler.PostLogin)
 	e.POST("/logout", handler.PostLogout)
