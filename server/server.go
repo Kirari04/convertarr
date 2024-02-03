@@ -30,6 +30,8 @@ func Serve() {
 	e.GET("/", handler.GetIndex)
 	e.GET("/setup", handler.GetSetup)
 	e.POST("/setup", handler.PostSetup)
+	e.GET("/setting", handler.GetSetting)
+	e.POST("/setting", handler.PostSetting)
 
 	// start & shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)

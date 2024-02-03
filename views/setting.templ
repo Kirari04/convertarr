@@ -1,0 +1,95 @@
+package views
+
+import (
+	"encoder/layouts"
+	"encoder/t"
+	"encoder/helper"
+	"fmt"
+	"time"
+)
+
+templ Setting(Error error, Title string, v t.SettingValidator) {
+	@layouts.Default(Error, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>Setting</p>
+			</div>
+			<form method="POST" action="/setting" class="message-body">
+				<h2 class="subtitle is-4">Security</h2>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableAuthentication"
+							checked?={ helper.PStrToStr(v.EnableAuthentication) == "checked" || helper.PStrToStr(v.EnableAuthentication) == "on" }
+						/>
+						Enable Authentication
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
+						<label class="radio">
+							<input
+								type="radio"
+								name="AuthenticationType"
+								value="form"
+								checked?={ helper.PStrToStr(v.AuthenticationType) == "form" }
+							/>
+							Form-Html
+						</label>
+						<label class="radio">
+							<input
+								type="radio"
+								name="AuthenticationType"
+								value="basic"
+								checked?={ helper.PStrToStr(v.AuthenticationType) == "basic" }
+							/>
+							Basic-Auth
+						</label>
+					</div>
+				</div>
+				<br />
+				<h2 class="subtitle is-4">Folder Scanning</h2>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableAutomaticScanns"
+							checked?={ helper.PStrToStr(v.EnableAutomaticScanns) == "checked" || helper.PStrToStr(v.EnableAutomaticScanns) == "on" }
+						/>
+						Enable Automatic Scanns
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
+						<label class="radio">
+							<select name="AutomaticScannsInterval">
+								for _, min := range []int{ 2, 5, 15, 30, 60, 120, 720, 1440 } {
+									<option value={ templ.EscapeString(fmt.Sprint(min)) } selected?={ v.AutomaticScannsInterval == min }>
+										{ templ.EscapeString(fmt.Sprintf("%s", time.Duration(min) * time.Minute )) }
+									</option>
+								}
+							</select>
+							Automatic Scanns Interval
+						</label>
+					</div>
+				</div>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="AutomaticScannsAtStartup"
+							checked?={ helper.PStrToStr(v.AutomaticScannsAtStartup) == "checked" || helper.PStrToStr(v.AutomaticScannsAtStartup) == "on" }
+						/>
+						Enable Automatic Scanns At Startup
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
+						<button type="submit" class="button is-primary">Save</button>
+					</div>
+				</div>
+			</form>
+		</article>
+	}
+}

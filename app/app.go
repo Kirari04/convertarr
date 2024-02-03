@@ -13,3 +13,4 @@ var Name string = "Convertarr"
 var DB *gorm.DB
 var Setting *m.SettingValue
 var Validate = validator.New(validator.WithRequiredStructEnabled())
+var TemporaryDb bool

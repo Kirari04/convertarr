@@ -16,9 +16,16 @@ type Setting struct {
 }
 
 type SettingValue struct {
-	HasBeenSetup         bool
+	HasBeenSetup bool
+
+	// auth
 	EnableAuthentication bool
 	AuthenticationType   *string // nil | form | basic
+
+	// scanning
+	EnableAutomaticScanns    bool
+	AutomaticScannsInterval  time.Duration
+	AutomaticScannsAtStartup bool
 }
 
 func (j *SettingValue) Scan(value interface{}) error {

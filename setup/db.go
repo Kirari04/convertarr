@@ -9,7 +9,12 @@ import (
 )
 
 func Db() {
-	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	var databasePath = "./database/db.sqlite"
+	if app.TemporaryDb {
+		log.Info("Using temporary database")
+		databasePath = "file::memory:?cache=shared"
+	}
+	db, err := gorm.Open(sqlite.Open(databasePath), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to open database", err)
 	}

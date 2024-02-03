@@ -43,7 +43,7 @@ func Navbar() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if app.Setting.HasBeenSetup {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a class=\"navbar-item\">Test</a>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a href=\"/setting\" class=\"navbar-item\">Settings</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

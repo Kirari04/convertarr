@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
+	"encoder/app"
 	"encoder/server"
 	"encoder/setup"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"runtime"
@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/labstack/gommon/log"
 	"github.com/thatisuday/commando"
 )
 
@@ -37,7 +38,12 @@ func main() {
 	commando.
 		Register("serve").
 		SetShortDescription("start webserver on :8080").
+		AddFlag("dev", "use temporary database", commando.Bool, false).
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			dev, _ := flags["dev"].GetBool()
+			if dev {
+				app.TemporaryDb = true
+			}
 			setup.Setup()
 			server.Serve()
 		})
@@ -133,19 +139,19 @@ func main() {
 
 				if err := cmd.Run(); err != nil {
 					log.Printf("Error happend while encoding: %v\n", err.Error())
-					log.Println("out", outb.String())
-					log.Println("err", errb.String())
-					log.Println(ffmpegCommand)
+					log.Error("out", outb.String())
+					log.Error("err", errb.String())
+					log.Error(ffmpegCommand)
 					time.Sleep(time.Second * 2)
 					continue
 				}
 				// delete original file
 				if err := os.Remove(file); err != nil {
-					log.Println("Failed to delete old file\n", err)
+					log.Warn("Failed to delete old file\n", err)
 				}
 				// delete nfo
 				if err := os.Remove(fmt.Sprintf("%s.nfo", file)); err != nil {
-					log.Println("Failed to delete nfo file\n", err)
+					log.Warn("Failed to delete nfo file\n", err)
 				}
 
 				fi, err = os.Stat(output)
