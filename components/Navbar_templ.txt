@@ -1,5 +1,0 @@
-<nav class=\"navbar\" role=\"navigation\" aria-label=\"main navigation\"><div class=\"navbar-brand\"><a class=\"navbar-item title\" href=\"/\">
-</a></div><div class=\"navbar-menu\"><div class=\"navbar-start\">
-<a href=\"/\" class=\"navbar-item\">Home</a> <a class=\"navbar-item\">Test</a>
-<a href=\"/setup\" class=\"navbar-item\">Setup</a>
-</div><div class=\"navbar-end\"></div></div></nav>

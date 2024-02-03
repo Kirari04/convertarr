@@ -36,7 +36,7 @@ func Setup(Error error, Title string, v t.SetupValidator) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<article class=\"message is-info\"><div class=\"message-header\"><p>Initial Run</p></div><form method=\"POST\" action=\"/setup\" class=\"message-body\">Welcome to ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -49,37 +49,37 @@ func Setup(Error error, Title string, v t.SetupValidator) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<br>Configure the following initial settings to get up and running:<br><br><h2 class=\"subtitle is-4\">Security</h2><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableAuthentication\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if helper.PStrToStr(v.EnableAuthentication) == "checked" || helper.PStrToStr(v.EnableAuthentication) == "on" {
-				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Authentication</label></div><div class=\"field\"><div class=\"control\"><label class=\"radio\"><input type=\"radio\" name=\"AuthenticationType\" value=\"form\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if helper.PStrToStr(v.AuthenticationType) == "form" {
-				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Form-Html</label> <label class=\"radio\"><input type=\"radio\" name=\"AuthenticationType\" value=\"basic\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if helper.PStrToStr(v.AuthenticationType) == "basic" {
-				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Basic-Auth</label></div></div><div class=\"field\"><label class=\"label\">Username</label><div class=\"control\"><input class=\"input\" type=\"text\" autocomplete=\"username\" placeholder=\"Username\" name=\"Username\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +87,7 @@ func Setup(Error error, Title string, v t.SetupValidator) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><label class=\"label\">Password</label><div class=\"control\"><input class=\"input\" type=\"password\" autocomplete=\"new-password\" placeholder=\"Password\" name=\"Password\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save & Setup</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
