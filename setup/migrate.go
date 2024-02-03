@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-gormigrate/gormigrate/v2"
-	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
 )
@@ -25,7 +24,7 @@ func Migrate() {
 					// it's a good pratice to copy the struct inside the function,
 					// so side effects are prevented if the original struct changes during the time
 					type User struct {
-						ID        uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
+						ID        uint `gorm:"primarykey"`
 						CreatedAt time.Time
 						UpdatedAt time.Time
 						Username  string
@@ -41,11 +40,11 @@ func Migrate() {
 				ID: "2",
 				Migrate: func(tx *gorm.DB) error {
 					type UserSession struct {
-						ID        uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
+						ID        uint `gorm:"primarykey"`
 						CreatedAt time.Time
 						UpdatedAt time.Time
 						User      m.User
-						UserId    uuid.UUID `gorm:"index"`
+						UserId    uint `gorm:"index"`
 					}
 
 					return tx.Migrator().CreateTable(&UserSession{})
@@ -58,7 +57,7 @@ func Migrate() {
 				ID: "3",
 				Migrate: func(tx *gorm.DB) error {
 					type Setting struct {
-						ID        uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
+						ID        uint `gorm:"primarykey"`
 						CreatedAt time.Time
 						UpdatedAt time.Time
 						Value     m.SettingValue

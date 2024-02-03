@@ -1,8 +1,10 @@
 package layouts
 
-import "encoder/components"
+import (
+	"encoder/components"
+)
 
-templ Default(Title string) {
+templ Default(Error error, Title string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -12,7 +14,20 @@ templ Default(Title string) {
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"/>
 		</head>
 		<body>
-			@components.Navbar()
+			<div class="container">
+				@components.Navbar()
+				if Error != nil {
+					<article class="message is-danger">
+						<div class="message-header">
+							<p>Error</p>
+						</div>
+						<div class="message-body">
+							{ Error.Error() }
+						</div>
+					</article>
+				}
+				{ children... }
+			</div>
 		</body>
 	</html>
 }

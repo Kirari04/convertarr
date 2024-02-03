@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoder/server"
+	"encoder/setup"
 	"fmt"
 	"log"
 	"os"
@@ -37,6 +38,7 @@ func main() {
 		Register("serve").
 		SetShortDescription("start webserver on :8080").
 		SetAction(func(args map[string]commando.ArgValue, flags map[string]commando.FlagValue) {
+			setup.Setup()
 			server.Serve()
 		})
 

@@ -12,10 +12,12 @@ import "bytes"
 
 import (
 	"encoder/app"
+	"encoder/helper"
 	"encoder/layouts"
+	"encoder/t"
 )
 
-func Index(Error error, Title string) templ.Component {
+func Setup(Error error, Title string, v t.SetupValidator) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -39,15 +41,53 @@ func Index(Error error, Title string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(app.Port)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(app.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 9, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setup.templ`, Line: 16, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableAuthentication) == "checked" || helper.PStrToStr(v.EnableAuthentication) == "on" {
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.AuthenticationType) == "form" {
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.AuthenticationType) == "basic" {
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.EscapeString(helper.PStrToStr(v.Username))))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

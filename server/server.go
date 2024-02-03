@@ -3,27 +3,35 @@ package server
 import (
 	"context"
 	"encoder/app"
-	"encoder/views"
+	"encoder/handler"
+	"encoder/mware"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
 
 func Serve() {
 	var Address = fmt.Sprintf("%s:%s", app.Hostname, app.Port)
+
+	// server config
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
 	e.Logger.SetLevel(log.INFO)
-	e.GET("/", func(c echo.Context) error {
-		return Render(c, http.StatusOK, views.Index())
-	})
+
+	e.Use(mware.HasBeenSetupRedirect)
+
+	// routes
+	e.GET("/", handler.GetIndex)
+	e.GET("/setup", handler.GetSetup)
+	e.POST("/setup", handler.PostSetup)
+
+	// start & shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	// Start server
@@ -46,10 +54,4 @@ func Serve() {
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}
-}
-
-func Render(ctx echo.Context, statusCode int, t templ.Component) error {
-	ctx.Response().Writer.WriteHeader(statusCode)
-	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return t.Render(ctx.Request().Context(), ctx.Response().Writer)
 }

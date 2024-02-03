@@ -2,14 +2,12 @@ package m
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type UserSession struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
+	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	User      User
-	UserId    uuid.UUID `gorm:"index"`
+	UserId    uint `gorm:"index"`
 }

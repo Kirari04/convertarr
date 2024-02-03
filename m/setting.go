@@ -6,18 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Setting struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey;uniqueIndex"`
+	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Value     SettingValue
 }
 
 type SettingValue struct {
+	HasBeenSetup         bool
 	EnableAuthentication bool
 	AuthenticationType   *string // nil | form | basic
 }

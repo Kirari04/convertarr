@@ -1,0 +1,9 @@
+<article class=\"message is-info\"><div class=\"message-header\"><p>Initial Run</p></div><form method=\"POST\" action=\"/setup\" class=\"message-body\">Welcome to 
+<br>Configure the following initial settings to get up and running:<br><br><h2 class=\"subtitle is-4\">Security</h2><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableAuthentication\"
+ checked
+> Enable Authentication</label></div><div class=\"field\"><div class=\"control\"><label class=\"radio\"><input type=\"radio\" name=\"AuthenticationType\" value=\"form\"
+ checked
+> Form-Html</label> <label class=\"radio\"><input type=\"radio\" name=\"AuthenticationType\" value=\"basic\"
+ checked
+> Basic-Auth</label></div></div><div class=\"field\"><label class=\"label\">Username</label><div class=\"control\"><input class=\"input\" type=\"text\" autocomplete=\"username\" placeholder=\"Username\" name=\"Username\" value=\"
+\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><label class=\"label\">Password</label><div class=\"control\"><input class=\"input\" type=\"password\" autocomplete=\"new-password\" placeholder=\"Password\" name=\"Password\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save & Setup</button></div></div></form></article>
