@@ -10,9 +10,12 @@ import "context"
 import "io"
 import "bytes"
 
-import "encoder/app"
+import (
+	"encoder/app"
+	"encoder/t"
+)
 
-func Navbar() templ.Component {
+func Navbar(Ctx t.TemplCtx) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -32,7 +35,7 @@ func Navbar() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(app.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/Navbar.templ`, Line: 8, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/Navbar.templ`, Line: 11, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -43,9 +46,11 @@ func Navbar() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if app.Setting.HasBeenSetup {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a href=\"/setting\" class=\"navbar-item\">Settings</a>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if !app.Setting.EnableAuthentication || (app.Setting.EnableAuthentication && Ctx.IsAuth) {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a href=\"/setting\" class=\"navbar-item\">Settings</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		} else {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/setup\" class=\"navbar-item\">Setup</a>")
@@ -53,7 +58,17 @@ func Navbar() templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"navbar-end\"></div></div></nav>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"navbar-end\"><div class=\"navbar-item\"><div class=\"buttons\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if Ctx.IsAuth {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form action=\"/logout\" method=\"post\"><button type=\"submit\" class=\"button is-danger\">Logout</button></form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -19,41 +19,6 @@ func Migrate() {
 		app.DB, gormigrate.DefaultOptions,
 		[]*gormigrate.Migration{
 			{
-				ID: "1",
-				Migrate: func(tx *gorm.DB) error {
-					// it's a good pratice to copy the struct inside the function,
-					// so side effects are prevented if the original struct changes during the time
-					type User struct {
-						ID        uint `gorm:"primarykey"`
-						CreatedAt time.Time
-						UpdatedAt time.Time
-						Username  string
-						PwdHash   string
-					}
-					return tx.Migrator().CreateTable(&User{})
-				},
-				Rollback: func(tx *gorm.DB) error {
-					return tx.Migrator().DropTable("users")
-				},
-			},
-			{
-				ID: "2",
-				Migrate: func(tx *gorm.DB) error {
-					type UserSession struct {
-						ID        uint `gorm:"primarykey"`
-						CreatedAt time.Time
-						UpdatedAt time.Time
-						User      m.User
-						UserId    uint `gorm:"index"`
-					}
-
-					return tx.Migrator().CreateTable(&UserSession{})
-				},
-				Rollback: func(tx *gorm.DB) error {
-					return tx.Migrator().DropTable("user_sessions")
-				},
-			},
-			{
 				ID: "3",
 				Migrate: func(tx *gorm.DB) error {
 					type Setting struct {

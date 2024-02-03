@@ -1,8 +1,11 @@
 package components
 
-import "encoder/app"
+import (
+	"encoder/t"
+	"encoder/app"
+)
 
-templ Navbar() {
+templ Navbar(Ctx t.TemplCtx) {
 	<nav class="navbar" role="navigation" aria-label="main navigation">
 		<div class="navbar-brand">
 			<a class="navbar-item title" href="/">
@@ -12,12 +15,14 @@ templ Navbar() {
 		<div class="navbar-menu">
 			<div class="navbar-start">
 				if app.Setting.HasBeenSetup {
-					<a href="/" class="navbar-item">
-						Home
-					</a>
-					<a href="/setting" class="navbar-item">
-						Settings
-					</a>
+					if !app.Setting.EnableAuthentication || (app.Setting.EnableAuthentication &&  Ctx.IsAuth) {
+						<a href="/" class="navbar-item">
+							Home
+						</a>
+						<a href="/setting" class="navbar-item">
+							Settings
+						</a>
+					}
 				} else {
 					<a href="/setup" class="navbar-item">
 						Setup
@@ -25,13 +30,17 @@ templ Navbar() {
 				}
 			</div>
 			<div class="navbar-end">
-				// <div class="navbar-item">
-				// 	<div class="buttons">
-				// 		<a class="button is-light">
-				// 			Log in
-				// 		</a>
-				// 	</div>
-				// </div>
+				<div class="navbar-item">
+					<div class="buttons">
+						if Ctx.IsAuth {
+							<form action="/logout" method="post">
+								<button type="submit" class="button is-danger">
+									Logout
+								</button>
+							</form>
+						}
+					</div>
+				</div>
 			</div>
 		</div>
 	</nav>

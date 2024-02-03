@@ -17,3 +17,4 @@ var Validate = validator.New(validator.WithRequiredStructEnabled())
 var TemporaryDb bool
 var ResourcesHistory t.Resources
 var MaxResourcesHistory = 1000
+var JwtSecret string = "secret"

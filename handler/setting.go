@@ -43,7 +43,7 @@ func GetSetting(c echo.Context) error {
 	return helper.Render(c,
 		http.StatusOK,
 		views.Setting(
-			nil,
+			helper.TCtx(c),
 			fmt.Sprintf("%s - Settings", app.Name),
 			v,
 		),
@@ -56,7 +56,7 @@ func PostSetting(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setting(
-				errors.New("bad request"),
+				helper.TCtxWError(c, errors.New("bad request")),
 				fmt.Sprintf("%s - Setting", app.Name),
 				v,
 			),
@@ -66,7 +66,7 @@ func PostSetting(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setting(
-				err,
+				helper.TCtxWError(c, err),
 				fmt.Sprintf("%s - Setting", app.Name),
 				v,
 			),
@@ -75,24 +75,11 @@ func PostSetting(c echo.Context) error {
 
 	if v.EnableAuthentication != nil && *v.EnableAuthentication == "on" {
 		// check if user had been already created
-		var existingUsers int64
-		if err := app.DB.Model(&m.User{}).Count(&existingUsers).Error; err != nil {
-			c.Echo().Logger.Error("Failed to count existing users", err)
+		if app.Setting.Username == "" {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setting(
-					errors.New("internal server error"),
-					fmt.Sprintf("%s - Setting", app.Name),
-					v,
-				),
-			)
-		}
-
-		if existingUsers == 0 {
-			return helper.Render(c,
-				http.StatusBadRequest,
-				views.Setting(
-					errors.New("before you enable authentication you have to create an user"),
+					helper.TCtxWError(c, errors.New("before you enable authentication you have to create an user")),
 					fmt.Sprintf("%s - Setting", app.Name),
 					v,
 				),
@@ -109,7 +96,7 @@ func PostSetting(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setting(
-					errors.New("AuthenticationType cant be empty when authentication is enabled"),
+					helper.TCtxWError(c, errors.New("AuthenticationType cant be empty when authentication is enabled")),
 					fmt.Sprintf("%s - Setting", app.Name),
 					v,
 				),
@@ -139,7 +126,7 @@ func PostSetting(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setting(
-				errors.New("internal server error"),
+				helper.TCtxWError(c, errors.New("internal server error")),
 				fmt.Sprintf("%s - Setting", app.Name),
 				v,
 			),
@@ -153,7 +140,7 @@ func PostSetting(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setting(
-				errors.New("internal server error"),
+				helper.TCtxWError(c, errors.New("internal server error")),
 				fmt.Sprintf("%s - Setting", app.Name),
 				v,
 			),

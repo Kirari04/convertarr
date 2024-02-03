@@ -22,7 +22,7 @@ func GetSetup(c echo.Context) error {
 	return helper.Render(c,
 		http.StatusOK,
 		views.Setup(
-			nil,
+			helper.TCtx(c),
 			fmt.Sprintf("%s - Home", app.Name),
 			t.SetupValidator{},
 		),
@@ -39,7 +39,7 @@ func PostSetup(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setup(
-				errors.New("bad request"),
+				helper.TCtxWError(c, errors.New("bad request")),
 				fmt.Sprintf("%s - Home", app.Name),
 				v,
 			),
@@ -48,7 +48,8 @@ func PostSetup(c echo.Context) error {
 	if err := app.Validate.Struct(v); err != nil {
 		return helper.Render(c,
 			http.StatusBadRequest,
-			views.Setup(err,
+			views.Setup(
+				helper.TCtxWError(c, err),
 				fmt.Sprintf("%s - Home", app.Name),
 				v,
 			),
@@ -66,7 +67,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("AuthenticationType cant be empty when authentication is enabled"),
+					helper.TCtxWError(c, errors.New("AuthenticationType cant be empty when authentication is enabled")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -76,7 +77,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("username cant be empty when authentication is enabled"),
+					helper.TCtxWError(c, errors.New("username cant be empty when authentication is enabled")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -86,7 +87,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("password cant be empty when authentication is enabled"),
+					helper.TCtxWError(c, errors.New("password cant be empty when authentication is enabled")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -97,7 +98,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("username has to be more than, or 4 characters"),
+					helper.TCtxWError(c, errors.New("username has to be more than, or 4 characters")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -108,7 +109,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("password has to be more than, or 8 characters"),
+					helper.TCtxWError(c, errors.New("password has to be more than, or 8 characters")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -123,7 +124,7 @@ func PostSetup(c echo.Context) error {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setup(
-					errors.New("internal server error"),
+					helper.TCtxWError(c, errors.New("internal server error")),
 					fmt.Sprintf("%s - Home", app.Name),
 					v,
 				),
@@ -131,20 +132,8 @@ func PostSetup(c echo.Context) error {
 		}
 
 		// create user
-		if err := app.DB.Create(&m.User{
-			Username: *v.Username,
-			PwdHash:  string(pwdHash),
-		}).Error; err != nil {
-			c.Echo().Logger.Error("Failed to create user", err)
-			return helper.Render(c,
-				http.StatusBadRequest,
-				views.Setup(
-					errors.New("internal server error"),
-					fmt.Sprintf("%s - Home", app.Name),
-					v,
-				),
-			)
-		}
+		app.Setting.Username = *v.Username
+		app.Setting.PwdHash = string(pwdHash)
 	}
 
 	app.Setting.HasBeenSetup = true
@@ -155,7 +144,7 @@ func PostSetup(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setup(
-				errors.New("internal server error"),
+				helper.TCtxWError(c, errors.New("internal server error")),
 				fmt.Sprintf("%s - Home", app.Name),
 				v,
 			),
@@ -169,7 +158,7 @@ func PostSetup(c echo.Context) error {
 		return helper.Render(c,
 			http.StatusBadRequest,
 			views.Setup(
-				errors.New("internal server error"),
+				helper.TCtxWError(c, errors.New("internal server error")),
 				fmt.Sprintf("%s - Home", app.Name),
 				v,
 			),

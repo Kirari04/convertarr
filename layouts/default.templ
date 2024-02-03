@@ -2,9 +2,10 @@ package layouts
 
 import (
 	"encoder/components"
+	"encoder/t"
 )
 
-templ Default(Error error, Title string) {
+templ Default(Ctx t.TemplCtx, Title string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -16,14 +17,14 @@ templ Default(Error error, Title string) {
 		</head>
 		<body>
 			<div class="container">
-				@components.Navbar()
-				if Error != nil {
+				@components.Navbar(Ctx)
+				if Ctx.Error != nil {
 					<article class="message is-danger">
 						<div class="message-header">
 							<p>Error</p>
 						</div>
 						<div class="message-body">
-							{ Error.Error() }
+							{ Ctx.Error.Error() }
 						</div>
 					</article>
 				}

@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-templ Setting(Error error, Title string, v t.SettingValidator) {
-	@layouts.Default(Error, Title) {
+templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
+	@layouts.Default(Ctx, Title) {
 		<article class="message">
 			<div class="message-header">
 				<p>Setting</p>

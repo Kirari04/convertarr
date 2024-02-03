@@ -1,0 +1,35 @@
+package views
+
+import (
+	"encoder/layouts"
+	"encoder/t"
+	"encoder/helper"
+)
+
+templ SettingUser(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
+	@layouts.Default(Ctx, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>Setting - User</p>
+			</div>
+			<form method="POST" action="/setting" class="message-body">
+				<h2 class="subtitle is-4">Add User</h2>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableAuthentication"
+							checked?={ helper.PStrToStr(v.EnableAuthentication) == "checked" || helper.PStrToStr(v.EnableAuthentication) == "on" }
+						/>
+						Enable Authentication
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
+						<button type="submit" class="button is-primary">Save</button>
+					</div>
+				</div>
+			</form>
+		</article>
+	}
+}

@@ -10,8 +10,8 @@ import (
 func HasBeenSetupRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if !app.Setting.HasBeenSetup {
-			if c.Path() != "/setup" && c.Path() != "/favicon.ico" {
-				c.Redirect(http.StatusTemporaryRedirect, "/setup")
+			if c.Request().URL.Path != "/setup" && c.Request().URL.Path != "/favicon.ico" {
+				return c.Redirect(http.StatusFound, "/setup")
 			}
 		}
 		return next(c)

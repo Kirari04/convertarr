@@ -21,6 +21,8 @@ type SettingValue struct {
 	// auth
 	EnableAuthentication bool
 	AuthenticationType   *string // nil | form | basic
+	Username             string
+	PwdHash              string
 
 	// scanning
 	EnableAutomaticScanns    bool

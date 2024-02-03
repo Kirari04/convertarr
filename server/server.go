@@ -25,6 +25,7 @@ func Serve() {
 	e.Logger.SetLevel(log.INFO)
 
 	e.Use(mware.HasBeenSetupRedirect)
+	e.Use(mware.AuthEnabledRedirect)
 
 	// routes
 	e.GET("/", handler.GetIndex)
@@ -32,6 +33,9 @@ func Serve() {
 	e.POST("/setup", handler.PostSetup)
 	e.GET("/setting", handler.GetSetting)
 	e.POST("/setting", handler.PostSetting)
+	e.GET("/login", handler.GetLogin)
+	e.POST("/login", handler.PostLogin)
+	e.POST("/logout", handler.PostLogout)
 
 	// start & shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)

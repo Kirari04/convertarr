@@ -11,5 +11,12 @@ import (
 )
 
 func GetIndex(c echo.Context) error {
-	return helper.Render(c, http.StatusOK, views.Index(nil, fmt.Sprintf("%s - Home", app.Name), app.ResourcesHistory))
+	return helper.Render(c,
+		http.StatusOK,
+		views.Index(
+			helper.TCtx(c),
+			fmt.Sprintf("%s - Home", app.Name),
+			app.ResourcesHistory,
+		),
+	)
 }

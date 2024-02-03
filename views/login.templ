@@ -1,0 +1,50 @@
+package views
+
+import (
+	"encoder/layouts"
+	"encoder/t"
+)
+
+templ Login(Ctx t.TemplCtx, Title string, v t.LoginValidator) {
+	@layouts.Default(Ctx, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>Setting - User</p>
+			</div>
+			<form method="POST" action="/login" class="message-body">
+				<div class="field">
+                    <label class="label">Username</label>
+					<div class="control">
+						<input
+							class="input"
+							type="text"
+							autocomplete="username"
+							placeholder="Username"
+							name="Username"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(v.Username) }
+						/>
+					</div>
+				</div>
+				<div class="field">
+					<label class="label">Password</label>
+					<div class="control">
+						<input
+							class="input"
+							type="password"
+							autocomplete="new-password"
+							placeholder="Password"
+							name="Password"
+							style="max-width: 400px;"
+						/>
+					</div>
+				</div>
+				<div class="field">
+					<div class="control">
+						<button type="submit" class="button is-primary">Save</button>
+					</div>
+				</div>
+			</form>
+		</article>
+	}
+}

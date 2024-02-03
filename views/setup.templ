@@ -7,8 +7,8 @@ import (
 	"encoder/helper"
 )
 
-templ Setup(Error error, Title string, v t.SetupValidator) {
-	@layouts.Default(Error, Title) {
+templ Setup(Ctx t.TemplCtx, Title string, v t.SetupValidator) {
+	@layouts.Default(Ctx, Title) {
 		<article class="message is-info">
 			<div class="message-header">
 				<p>Initial Run</p>

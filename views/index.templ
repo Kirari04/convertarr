@@ -107,8 +107,8 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 	}
 }
 
-templ Index(Error error, Title string, resources t.Resources) {
-	@layouts.Default(Error, Title) {
+templ Index(Ctx t.TemplCtx, Title string, resources t.Resources) {
+	@layouts.Default(Ctx, Title) {
 		<article class="message">
 			<div class="message-header">
 				<p>Server Resource Ussage</p>
