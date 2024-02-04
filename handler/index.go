@@ -15,22 +15,22 @@ import (
 
 func GetIndex(c echo.Context) error {
 	type historyStats struct {
-		AvgNewSize float64
-		AvgOldSize float64
+		SumNewSize float64
+		SumOldSize float64
 	}
 	var historyStatsRes historyStats
 	if err := app.DB.
 		Model(&m.History{}).
 		Select(
-			"AVG(histories.new_size) as avg_new_size",
-			"AVG(histories.old_size) as avg_old_size",
+			"SUM(histories.new_size) as sum_new_size",
+			"SUM(histories.old_size) as sum_old_size",
 		).
 		Scan(&historyStatsRes).
 		Error; err != nil {
 		log.Error("Failed to get history stats", err)
 	}
 
-	savedStorage := historyStatsRes.AvgOldSize - historyStatsRes.AvgNewSize
+	savedStorage := historyStatsRes.SumOldSize - historyStatsRes.SumNewSize
 
 	var encodedFiles int64
 	if err := app.DB.
