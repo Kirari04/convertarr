@@ -5,6 +5,7 @@ import (
 	"encoder/t"
 	"encoder/m"
 	"github.com/dustin/go-humanize"
+	"fmt"
 )
 
 templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
@@ -27,6 +28,7 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 								<th>Path</th>
 								<th>OldSize</th>
 								<th>NewSize</th>
+								<th>TimeTaken</th>
 								<th>Status</th>
 							</tr>
 						</thead>
@@ -44,6 +46,9 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 									</td>
 									<td>
 										{ humanize.Bytes(history.NewSize) }
+									</td>
+									<td>
+										{ fmt.Sprintf("%s", history.TimeTaken) }
 									</td>
 									<td>
 										switch history.Status {

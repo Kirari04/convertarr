@@ -121,7 +121,7 @@ func encodeFile(file string) {
 				"-y " +
 				fmt.Sprintf(`"%s"`, output)
 	}
-
+	startTime := time.Now()
 	cmd := exec.Command(
 		"bash",
 		"-c",
@@ -156,6 +156,8 @@ func encodeFile(file string) {
 		log.Warn("Failed to delete old nfo file\n", err)
 	}
 
+	endTime := time.Now()
+
 	fi, err = os.Stat(output)
 	if err != nil {
 		log.Errorf("Failed to read filesize of new file %s\n", err)
@@ -167,7 +169,7 @@ func encodeFile(file string) {
 	newSize := fi.Size()
 
 	log.Infof("Old Size: %s / New Size: %s\n", humanize.Bytes(uint64(oldSize)), humanize.Bytes(uint64(newSize)))
-	if err := history.Finished(app.DB, uint64(oldSize), uint64(newSize)); err != nil {
+	if err := history.Finished(app.DB, uint64(oldSize), uint64(newSize), time.Duration(endTime.Second()-startTime.Second())*time.Second); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
 }
