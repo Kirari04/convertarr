@@ -10,7 +10,7 @@ FROM alpine:3.14
 WORKDIR /app
 VOLUME /app/database
 
-RUN apk add --no-cache ffmpeg bash
+RUN apk add --no-cache ffmpeg bash coreutils
 
 COPY --from=builder /app/main.bin /app/main.bin
 
