@@ -11,3 +11,11 @@ go run main.go serve
 ```bash
 templ generate --watch
 ```
+
+## Docker 
+
+### Build
+
+```bash
+docker build --platform linux/amd64 -t kirari04/convertarr:latest --push .
+```
