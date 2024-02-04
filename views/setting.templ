@@ -6,6 +6,7 @@ import (
 	"encoder/helper"
 	"fmt"
 	"time"
+	"runtime"
 )
 
 templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
@@ -53,7 +54,7 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 						User Settings
 					</a>
 				</div>
-				<br />
+				<br/>
 				<h2 class="subtitle is-4">Folder Scanning</h2>
 				<div class="field">
 					<label class="checkbox">
@@ -67,7 +68,7 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 				</div>
 				<div class="field">
 					<div class="control">
-						<label class="radio">
+						<span class="select">
 							<select name="AutomaticScannsInterval">
 								for _, min := range []int{ 2, 5, 15, 30, 60, 120, 720, 1440 } {
 									<option value={ templ.EscapeString(fmt.Sprint(min)) } selected?={ v.AutomaticScannsInterval == min }>
@@ -75,8 +76,8 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 									</option>
 								}
 							</select>
-							Automatic Scanns Interval
-						</label>
+						</span>
+						Automatic Scanns Interval
 					</div>
 				</div>
 				<div class="field">
@@ -93,6 +94,45 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 					<a href="/setting/folder" class="button is-info">
 						Folder Settings
 					</a>
+				</div>
+				<h2 class="subtitle is-4">File Encoding</h2>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableEncoding"
+							checked?={ helper.PStrToStr(v.EnableEncoding) == "checked" || helper.PStrToStr(v.EnableEncoding) == "on" }
+						/>
+						Enable Automatic Scanns
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
+						<input
+							class="input"
+							type="number"
+							name="EncodingThreads"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(fmt.Sprint(v.EncodingThreads)) }
+							min="0"
+							max={ fmt.Sprint(runtime.NumCPU()) }
+						/>
+						Encoding Threads (0 = use all, max = { fmt.Sprint(runtime.NumCPU()) })
+					</div>
+				</div>
+				<div class="field">
+					<div class="control">
+						<input
+							class="input"
+							type="number"
+							name="EncodingCrf"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(fmt.Sprint(v.EncodingCrf)) }
+							min="1"
+							max="50"
+						/>
+						Encoding Crf (1-50)
+					</div>
 				</div>
 				<div class="field">
 					<div class="control">

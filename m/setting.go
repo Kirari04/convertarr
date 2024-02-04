@@ -32,6 +32,11 @@ type SettingValue struct {
 	AutomaticScannsInterval  time.Duration
 	AutomaticScannsAtStartup bool
 	LastFolderScann          time.Time
+
+	// encoding
+	EnableEncoding  bool
+	EncodingThreads int
+	EncodingCrf     int
 }
 
 func (j *SettingValue) Scan(value interface{}) error {

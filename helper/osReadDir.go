@@ -30,9 +30,17 @@ func OSReadDir(root string) ([]string, error) {
 			}
 			files = append(files, newFiles...)
 		} else {
-			if strings.HasSuffix(file.Name(), ".mkv") {
-				files = append(files, fmt.Sprintf("%s%s", root, file.Name()))
+			if !strings.Contains(file.Name(), "[encoded]") {
+				if strings.HasSuffix(file.Name(), ".mkv") {
+
+					newFilePath := fmt.Sprintf("%s%s", root, file.Name())
+					if !strings.HasPrefix(file.Name(), "/") {
+						newFilePath = fmt.Sprintf("%s/%s", root, file.Name())
+					}
+					files = append(files, newFilePath)
+				}
 			}
+
 		}
 	}
 	return files, nil

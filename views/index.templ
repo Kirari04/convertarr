@@ -4,6 +4,7 @@ import (
 	"encoder/app"
 	"encoder/layouts"
 	"encoder/t"
+	"fmt"
 )
 
 script chartData(resources t.Resources, maxResourcesHistory int) {
@@ -114,6 +115,14 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources) {
 				<p>Server Resource Ussage</p>
 			</div>
 			<div class="message-body">
+				<nav class="level">
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Files in queue</p>
+							<p class="title">{ fmt.Sprint(len(app.FilesToEncode)) }</p>
+						</div>
+					</div>
+				</nav>
 				<div id="chart"></div>
 				<div id="chart2"></div>
 			</div>

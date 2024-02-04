@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -39,6 +40,20 @@ func GetSetting(c echo.Context) error {
 	}
 
 	v.AutomaticScannsInterval = int(app.Setting.AutomaticScannsInterval.Minutes())
+
+	if app.Setting.EnableEncoding {
+		v.EnableEncoding = &on
+	} else {
+		v.EnableEncoding = nil
+	}
+
+	if app.Setting.EncodingCrf <= 0 {
+		v.EncodingCrf = 28
+	} else {
+		v.EncodingCrf = app.Setting.EncodingCrf
+	}
+
+	v.EncodingThreads = app.Setting.EncodingThreads
 
 	return helper.Render(c,
 		http.StatusOK,
@@ -119,6 +134,27 @@ func PostSetting(c echo.Context) error {
 	}
 
 	app.Setting.AutomaticScannsInterval = time.Duration(v.AutomaticScannsInterval) * time.Minute
+
+	if v.EnableEncoding != nil && *v.EnableEncoding == "on" {
+		app.Setting.EnableEncoding = true
+	} else {
+		app.Setting.EnableEncoding = false
+	}
+
+	if app.Setting.EnableEncoding {
+		app.Setting.EncodingCrf = v.EncodingCrf
+		if v.EncodingThreads > runtime.NumCPU() {
+			return helper.Render(c,
+				http.StatusBadRequest,
+				views.Setting(
+					helper.TCtxWError(c, errors.New("you can use more threads than available")),
+					fmt.Sprintf("%s - Setting", app.Name),
+					v,
+				),
+			)
+		}
+		app.Setting.EncodingThreads = v.EncodingThreads
+	}
 
 	var setting m.Setting
 	if err := app.DB.First(&setting).Error; err != nil {

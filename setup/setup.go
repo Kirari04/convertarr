@@ -6,4 +6,5 @@ func Setup() {
 	Seed()
 	Resources()
 	Scanner()
+	Encoder()
 }

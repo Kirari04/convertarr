@@ -14,6 +14,7 @@ import (
 	"encoder/app"
 	"encoder/layouts"
 	"encoder/t"
+	"fmt"
 )
 
 func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
@@ -142,7 +143,20 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources) templ.Component 
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<article class=\"message\"><div class=\"message-header\"><p>Server Resource Ussage</p></div><div class=\"message-body\"><div id=\"chart\"></div><div id=\"chart2\"></div></div></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<article class=\"message\"><div class=\"message-header\"><p>Server Resource Ussage</p></div><div class=\"message-body\"><nav class=\"level\"><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Files in queue</p><p class=\"title\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(app.FilesToEncode)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 121, Col: 60}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div></nav><div id=\"chart\"></div><div id=\"chart2\"></div></div></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -15,6 +15,7 @@ import (
 	"encoder/layouts"
 	"encoder/t"
 	"fmt"
+	"runtime"
 	"time"
 )
 
@@ -77,7 +78,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns</label></div><div class=\"field\"><div class=\"control\"><label class=\"radio\"><select name=\"AutomaticScannsInterval\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns</label></div><div class=\"field\"><div class=\"control\"><span class=\"select\"><select name=\"AutomaticScannsInterval\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -107,7 +108,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(templ.EscapeString(fmt.Sprintf("%s", time.Duration(min)*time.Minute)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting.templ`, Line: 73, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting.templ`, Line: 74, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -118,7 +119,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> Automatic Scanns Interval</label></div></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"AutomaticScannsAtStartup\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></span> Automatic Scanns Interval</div></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"AutomaticScannsAtStartup\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -128,7 +129,54 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns At Startup</label></div><div class=\"field\"><a href=\"/setting/folder\" class=\"button is-info\">Folder Settings</a></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns At Startup</label></div><div class=\"field\"><a href=\"/setting/folder\" class=\"button is-info\">Folder Settings</a></div><h2 class=\"subtitle is-4\">File Encoding</h2><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableEncoding\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableEncoding) == "checked" || helper.PStrToStr(v.EnableEncoding) == "on" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns</label></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingThreads\" style=\"max-width: 400px;\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.EscapeString(fmt.Sprint(v.EncodingThreads))))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"0\" max=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprint(runtime.NumCPU())))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> Encoding Threads (0 = use all, max = ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(runtime.NumCPU()))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting.templ`, Line: 119, Col: 73}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(")</div></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingCrf\" style=\"max-width: 400px;\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.EscapeString(fmt.Sprint(v.EncodingCrf))))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"1\" max=\"50\"> Encoding Crf (1-50)</div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

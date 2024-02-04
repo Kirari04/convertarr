@@ -45,5 +45,15 @@ func scannFolders() {
 	}
 
 	log.Infof("Found %d files for encoding", len(filesToEncode))
-	app.FilesToEncode = filesToEncode
+	for _, fileToEncode := range filesToEncode {
+		var exists bool
+		for _, existingFile := range app.FilesToEncode {
+			if existingFile == fileToEncode {
+				exists = true
+			}
+		}
+		if !exists {
+			app.FilesToEncode = append(app.FilesToEncode, fileToEncode)
+		}
+	}
 }
