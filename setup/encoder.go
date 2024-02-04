@@ -92,6 +92,7 @@ func encodeFile(file string) {
 	}
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
 	// https://trac.ffmpeg.org/ticket/3730
+	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
 		h265Pools := "*"
