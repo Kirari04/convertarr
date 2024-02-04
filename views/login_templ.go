@@ -42,7 +42,7 @@ func Login(Ctx t.TemplCtx, Title string, v t.LoginValidator) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"field\"><label class=\"label\">Password</label><div class=\"control\"><input class=\"input\" type=\"password\" autocomplete=\"current-password\" placeholder=\"Password\" name=\"Password\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div><div class=\"field\"><label class=\"label\">Password</label><div class=\"control\"><input class=\"input\" type=\"password\" autocomplete=\"current-password\" placeholder=\"Password\" name=\"Password\" style=\"max-width: 400px;\"></div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Login</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

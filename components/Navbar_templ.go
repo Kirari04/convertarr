@@ -73,7 +73,7 @@ func Navbar(Ctx t.TemplCtx) templ.Component {
 		}
 		if app.Setting.HasBeenSetup {
 			if !app.Setting.EnableAuthentication || (app.Setting.EnableAuthentication && Ctx.IsAuth) {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a href=\"/setting\" class=\"navbar-item\">Settings</a>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"navbar-item\">Home</a> <a href=\"/history\" class=\"navbar-item\">History</a> <a href=\"/setting\" class=\"navbar-item\">Settings</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

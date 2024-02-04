@@ -3,6 +3,7 @@ package setup
 import (
 	"bytes"
 	"encoder/app"
+	"encoder/m"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,6 +15,27 @@ import (
 )
 
 func Encoder() {
+	go func() {
+		// update old states of histories on startup
+		var histories []m.History
+		if err := app.DB.
+			Not(&m.History{
+				Status: "finished",
+			}).
+			Or(&m.History{
+				Status: "failed",
+			}).
+			Find(&histories).Error; err != nil {
+			log.Error("Failed to list old histories: ", err)
+			return
+		}
+		for _, history := range histories {
+			historyPtr := &history
+			if err := historyPtr.Failed(app.DB, "Failed because serever shutdown (probably)"); err != nil {
+				log.Error("Failed to upate history: ", err)
+			}
+		}
+	}()
 	go func() {
 		for {
 			time.Sleep(time.Second * 5)
@@ -32,21 +54,40 @@ func encodeFile(file string) {
 		app.CurrentFileToEncode = ""
 	}()
 
+	// TODO: legacy logic
 	if strings.Contains(file, "[encoded]") {
 		log.Infof("Skipping already encoded file %s\n", file)
+		return
+	}
+
+	history := &m.History{}
+	if err := history.Create(app.DB, file); err != nil {
+		log.Errorf("Failed to create history %v\n", err)
 		return
 	}
 
 	log.Infof("Encoding file %s\n", file)
 	fi, err := os.Stat(file)
 	if err != nil {
-		log.Infof("Failed to read filesize %s\n", err)
+		log.Errorf("Failed to read filesize %v\n", err)
+		if err := history.Failed(app.DB, err.Error()); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
 		return
 	}
 	oldSize := fi.Size()
 
 	output := strings.TrimSuffix(file, ".mkv")
 	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
+
+	if err := history.SetNewPath(app.DB, output); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
+
+	if err := history.Encoding(app.DB); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
+
 	ffmpegCommand :=
 		"ffmpeg " +
 			fmt.Sprintf(`-i "%s" `, file) + // input file
@@ -76,13 +117,22 @@ func encodeFile(file string) {
 		log.Error("out", outb.String())
 		log.Error("err", errb.String())
 		log.Error(ffmpegCommand)
+
+		if err := history.Failed(app.DB, fmt.Sprintf("%v | %v | %v", err.Error(), outb.String(), errb.String())); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
 		return
 	}
+
+	if err := history.Copy(app.DB, output); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
+
 	// delete original file
 	if err := os.Remove(file); err != nil {
 		log.Warn("Failed to delete old file\n", err)
 	}
-	// delete nfo
+	// delete old nfo
 	if err := os.Remove(fmt.Sprintf("%s.nfo", file)); err != nil {
 		log.Warn("Failed to delete old nfo file\n", err)
 	}
@@ -90,9 +140,15 @@ func encodeFile(file string) {
 	fi, err = os.Stat(output)
 	if err != nil {
 		log.Errorf("Failed to read filesize of new file %s\n", err)
+		if err := history.Failed(app.DB, err.Error()); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
 		return
 	}
 	newSize := fi.Size()
 
 	log.Infof("Old Size: %s / New Size: %s\n", humanize.Bytes(uint64(oldSize)), humanize.Bytes(uint64(newSize)))
+	if err := history.Finished(app.DB, uint64(oldSize), uint64(newSize)); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
 }

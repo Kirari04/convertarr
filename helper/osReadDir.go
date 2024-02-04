@@ -30,6 +30,7 @@ func OSReadDir(root string) ([]string, error) {
 			}
 			files = append(files, newFiles...)
 		} else {
+			// TODO: legacy cheeck for encoded in filename
 			if !strings.Contains(file.Name(), "[encoded]") {
 				if strings.HasSuffix(file.Name(), ".mkv") {
 

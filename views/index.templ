@@ -108,7 +108,7 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 	}
 }
 
-templ Index(Ctx t.TemplCtx, Title string, resources t.Resources) {
+templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage string, encodedFiles string) {
 	@layouts.Default(Ctx, Title) {
 		<article class="message">
 			<div class="message-header">
@@ -120,6 +120,18 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources) {
 						<div>
 							<p class="heading">Files in queue</p>
 							<p class="title">{ fmt.Sprint(len(app.FilesToEncode)) }</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Saved storage</p>
+							<p class="title">{ savedStorage }</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Encoded Files</p>
+							<p class="title">{ encodedFiles }</p>
 						</div>
 					</div>
 				</nav>

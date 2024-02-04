@@ -1,0 +1,70 @@
+package views
+
+import (
+	"encoder/layouts"
+	"encoder/t"
+	"encoder/m"
+	"github.com/dustin/go-humanize"
+)
+
+templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
+	@layouts.Default(Ctx, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>History</p>
+			</div>
+			<div class="message-body">
+				<h2 class="subtitle is-4">Encoding History</h2>
+				if len(histories) == 0 {
+					<div class="field">
+						No files encodet yet
+					</div>
+				} else {
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Created At</th>
+								<th>Path</th>
+								<th>OldSize</th>
+								<th>NewSize</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, history := range histories {
+								<tr>
+									<td>
+										{ history.CreatedAt.Format("2006-01-02 15:04:05") }
+									</td>
+									<td>
+										{ history.OldPath }
+									</td>
+									<td>
+										{ humanize.Bytes(history.OldSize) }
+									</td>
+									<td>
+										{ humanize.Bytes(history.NewSize) }
+									</td>
+									<td>
+										switch history.Status {
+											case "encoding":
+												<span class="tag is-link">{ history.Status }</span>
+                                            case "copy":
+												<span class="tag is-link">{ history.Status }</span>
+                                            case "failed":
+												<span class="tag is-danger">{ history.Status }</span>
+                                            case "finished":
+												<span class="tag is-success">{ history.Status }</span>
+											default:
+												<span class="tag">{ history.Status }</span>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</article>
+	}
+}

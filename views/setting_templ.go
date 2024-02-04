@@ -139,7 +139,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns</label></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingThreads\" style=\"max-width: 400px;\" value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Encoding</label></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingThreads\" style=\"max-width: 400px;\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
