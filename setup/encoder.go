@@ -113,7 +113,7 @@ func encodeFile(file string) {
 				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) +
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
-				"-max_muxing_queue_size 4096 " +
+				"-max_muxing_queue_size 9999 " +
 				fmt.Sprintf(`"%s"`, tmpOutput)
 	} else {
 		ffmpegCommand =
