@@ -79,6 +79,9 @@ func encodeFile(file string) {
 
 	output := strings.TrimSuffix(file, ".mkv")
 	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
+	tmpOutput := "tmp.mkv"
+
+	defer os.Remove(tmpOutput)
 
 	if err := history.SetNewPath(app.DB, output); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
@@ -108,7 +111,7 @@ func encodeFile(file string) {
 				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) +
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
-				fmt.Sprintf(`"%s"`, output)
+				fmt.Sprintf(`"%s"`, tmpOutput)
 	} else {
 		ffmpegCommand =
 			"nice -n 15 ffmpeg " +
@@ -123,7 +126,7 @@ func encodeFile(file string) {
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
-				fmt.Sprintf(`"%s"`, output)
+				fmt.Sprintf(`"%s"`, tmpOutput)
 	}
 	startTime := time.Now()
 	cmd := exec.Command(
@@ -149,6 +152,13 @@ func encodeFile(file string) {
 
 	if err := history.Copy(app.DB, output); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
+	}
+
+	if err := os.Rename(tmpOutput, output); err != nil {
+		if err := history.Failed(app.DB, fmt.Sprintf("Failed to copy encoded file to output path: %v", err)); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+		return
 	}
 
 	// delete original file
