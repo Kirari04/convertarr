@@ -19,12 +19,8 @@ func Encoder() {
 		// update old states of histories on startup
 		var histories []m.History
 		if err := app.DB.
-			Not(&m.History{
-				Status: "finished",
-			}).
-			Or(&m.History{
-				Status: "failed",
-			}).
+			Where("status != ?", "failed").
+			Or("status != ?", "finished").
 			Find(&histories).Error; err != nil {
 			log.Error("Failed to list old histories: ", err)
 			return
@@ -93,6 +89,11 @@ func encodeFile(file string) {
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
+
+	// Too many packets buffered for output stream 0:0. x265
+	// https://discussion.mcebuddy2x.com/t/ffmpeg-bug-too-many-packets-buffered-for-output-stream/1148/2
+	// https://stackoverflow.com/questions/49686244/ffmpeg-too-many-packets-buffered-for-output-stream-01
+
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
 		h265Pools := "*"
@@ -112,6 +113,7 @@ func encodeFile(file string) {
 				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) +
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
+				"-max_muxing_queue_size 4096 " +
 				fmt.Sprintf(`"%s"`, tmpOutput)
 	} else {
 		ffmpegCommand =
