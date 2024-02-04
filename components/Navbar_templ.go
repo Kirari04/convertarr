@@ -15,6 +15,32 @@ import (
 	"encoder/t"
 )
 
+func navbarScript() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_navbarScript_9a42`,
+		Function: `function __templ_navbarScript_9a42(){// Get all "navbar-burger" elements
+	const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+	// Add a click event on each of them
+	$navbarBurgers.forEach( el => {
+		el.addEventListener('click', () => {
+
+			// Get the target from the "data-target" attribute
+			const target = el.dataset.target;
+			const $target = document.getElementById(target);
+
+			// Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+			el.classList.toggle('is-active');
+			$target.classList.toggle('is-active');
+
+		});
+	});
+}`,
+		Call:       templ.SafeScript(`__templ_navbarScript_9a42`),
+		CallInline: templ.SafeScriptInline(`__templ_navbarScript_9a42`),
+	}
+}
+
 func Navbar(Ctx t.TemplCtx) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -35,13 +61,13 @@ func Navbar(Ctx t.TemplCtx) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(app.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/Navbar.templ`, Line: 11, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/Navbar.templ`, Line: 31, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a></div><div class=\"navbar-menu\"><div class=\"navbar-start\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a> <a role=\"button\" class=\"navbar-burger\" data-target=\"navMenu\" aria-label=\"menu\" aria-expanded=\"false\"><span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span></a></div><div class=\"navbar-menu\" id=\"navMenu\"><div class=\"navbar-start\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -69,6 +95,10 @@ func Navbar(Ctx t.TemplCtx) templ.Component {
 			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></nav>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = navbarScript().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
