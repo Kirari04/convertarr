@@ -128,7 +128,7 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns At Startup</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Automatic Scanns At Startup</label></div><div class=\"field\"><a href=\"/setting/folder\" class=\"button is-info\">Folder Settings</a></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

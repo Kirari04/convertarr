@@ -34,6 +34,22 @@ func Migrate() {
 					return tx.Migrator().DropTable("settings")
 				},
 			},
+			{
+				ID: "4",
+				Migrate: func(tx *gorm.DB) error {
+					type Folder struct {
+						ID        uint `gorm:"primarykey"`
+						CreatedAt time.Time
+						UpdatedAt time.Time
+						Path      string
+					}
+
+					return tx.Migrator().CreateTable(&Folder{})
+				},
+				Rollback: func(tx *gorm.DB) error {
+					return tx.Migrator().DropTable("folders")
+				},
+			},
 		},
 	)
 

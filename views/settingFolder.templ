@@ -1,0 +1,83 @@
+package views
+
+import (
+	"encoder/layouts"
+	"encoder/t"
+	"encoder/m"
+	"fmt"
+)
+
+templ SettingFolder(Ctx t.TemplCtx, Title string, v t.SettingFolderValidation, folders []m.Folder) {
+	@layouts.Default(Ctx, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>Setting - Folder</p>
+			</div>
+			<div class="message-body">
+				<div class="field">
+					<div class="control">
+						<a href="/setting" class="button is-info">
+							Back to Settings
+						</a>
+					</div>
+				</div>
+				<h2 class="subtitle is-4">Monitored Folder</h2>
+				if len(folders) == 0 {
+					<div class="field">
+						No folders added yet
+					</div>
+				} else {
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Created At</th>
+								<th>Path</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, folder := range folders {
+								<tr>
+									<td>
+										{ folder.CreatedAt.Format("2006-01-02 15:04:05") }
+									</td>
+									<td>
+										{ folder.Path }
+									</td>
+									<td>
+										<form action="/setting/folder/delete" method="POST">
+											<input type="hidden" name="FolderId" value={ fmt.Sprint(folder.ID) }/>
+											<button type="submit" class="button is-danger is-small">Remove</button>
+										</form>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+				<br/>
+				<form action="/setting/folder" method="POST">
+					<h2 class="subtitle is-4">Add Folder</h2>
+					<div class="field">
+						<label class="label">Folder</label>
+						<div class="control">
+							<input
+								class="input"
+								type="text"
+								placeholder="Folder"
+								name="Folder"
+								style="max-width: 400px;"
+								value={ templ.EscapeString(v.Folder) }
+							/>
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<button type="submit" class="button is-primary">Save</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</article>
+	}
+}
