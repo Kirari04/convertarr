@@ -48,7 +48,7 @@ func GetSetting(c echo.Context) error {
 	}
 
 	if app.Setting.EncodingCrf <= 0 {
-		v.EncodingCrf = 28
+		v.EncodingCrf = 25
 	} else {
 		v.EncodingCrf = app.Setting.EncodingCrf
 	}
