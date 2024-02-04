@@ -88,6 +88,7 @@ func encodeFile(file string) {
 		log.Errorf("Failed to update history %v\n", err)
 	}
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
+	// https://trac.ffmpeg.org/ticket/3730
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
 		ffmpegCommand =
