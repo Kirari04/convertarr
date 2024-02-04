@@ -35,6 +35,9 @@ func Encoder() {
 	go func() {
 		for {
 			time.Sleep(time.Second * 5)
+			if !app.Setting.EnableEncoding {
+				continue
+			}
 			if len(app.FilesToEncode) > 0 {
 				fileToEncode := app.FilesToEncode[0]
 				encodeFile(fileToEncode)
@@ -89,17 +92,8 @@ func encodeFile(file string) {
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
-
-	// Too many packets buffered for output stream 0:0. x265
-	// https://discussion.mcebuddy2x.com/t/ffmpeg-bug-too-many-packets-buffered-for-output-stream/1148/2
-	// https://stackoverflow.com/questions/49686244/ffmpeg-too-many-packets-buffered-for-output-stream-01
-
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
-		h265Pools := "*"
-		if app.Setting.EncodingThreads > 0 {
-			h265Pools = fmt.Sprint(app.Setting.EncodingThreads)
-		}
 		ffmpegCommand =
 			"nice -n 15 ffmpeg " +
 				fmt.Sprintf(`-i "%s" `, file) + // input file
@@ -110,10 +104,8 @@ func encodeFile(file string) {
 				"-map 0 " +
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
-				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) +
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
-				"-max_muxing_queue_size 9999 " +
 				fmt.Sprintf(`"%s"`, tmpOutput)
 	} else {
 		ffmpegCommand =
