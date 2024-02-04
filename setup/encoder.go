@@ -91,6 +91,10 @@ func encodeFile(file string) {
 	// https://trac.ffmpeg.org/ticket/3730
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
+		h265Pools := "*"
+		if app.Setting.EncodingThreads > 0 {
+			h265Pools = fmt.Sprint(app.Setting.EncodingThreads)
+		}
 		ffmpegCommand =
 			"nice -n 15 ffmpeg " +
 				fmt.Sprintf(`-i "%s" `, file) + // input file
@@ -101,7 +105,7 @@ func encodeFile(file string) {
 				"-map 0 " +
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
-				fmt.Sprintf("-x265-params crf=%d:pools=none -strict experimental ", app.Setting.EncodingCrf) +
+				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) +
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				"-y " +
 				fmt.Sprintf(`"%s"`, output)
