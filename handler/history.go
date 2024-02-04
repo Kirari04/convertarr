@@ -14,7 +14,10 @@ import (
 
 func GetHistory(c echo.Context) error {
 	var histories []m.History
-	if err := app.DB.Find(&histories).Error; err != nil {
+	if err := app.DB.
+		Order("id DESC").
+		Limit(50).
+		Find(&histories).Error; err != nil {
 		c.Logger().Error("failed to list histories", err)
 		return helper.Render(c,
 			http.StatusBadRequest,
