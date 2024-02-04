@@ -20,7 +20,7 @@ func Encoder() {
 		var histories []m.History
 		if err := app.DB.
 			Where("status != ?", "failed").
-			Or("status != ?", "finished").
+			Where("status != ?", "finished").
 			Find(&histories).Error; err != nil {
 			log.Error("Failed to list old histories: ", err)
 			return
