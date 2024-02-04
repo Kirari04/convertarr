@@ -11,7 +11,7 @@ docker run -d \
   -e PGID=1000 \
   -e TZ=Etc/UTC \
   -p 8080:8080 \
-  -v /path/to/data:/database \
+  -v /path/to/data:/app/database \
   -v /path/to/videofiles:/videofiles `#optional` \
   --restart unless-stopped \
   kirari04/convertarr:latest
@@ -30,7 +30,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /path/to/data:/database
+      - /path/to/data:/app/database
       - /path/to/videofiles:/videofiles #optional
     ports:
       - 8080:8080
