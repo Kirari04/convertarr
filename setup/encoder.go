@@ -95,13 +95,16 @@ func encodeFile(file string) {
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
 		ffmpegCommand =
-			"nice -n 15 ffmpeg " +
+			"ffmpeg " +
+				// "-analyzeduration 30000000 -probesize 8000000000 " +
 				fmt.Sprintf(`-i "%s" `, file) + // input file
+				// "-max_muxing_queue_size 9999 " +
 				fmt.Sprintf("-threads %d ", app.Setting.EncodingThreads) +
-				"-c:a copy " +
+				"-c:a ac3 -b:a 640k " +
 				"-c:s copy " +
 				"-c:v libx265 " + // setting video codec libx265 | libaom-av1
 				"-map 0 " +
+				// "-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
