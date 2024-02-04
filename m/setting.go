@@ -34,9 +34,11 @@ type SettingValue struct {
 	LastFolderScann          time.Time
 
 	// encoding
-	EnableEncoding  bool
-	EncodingThreads int
-	EncodingCrf     int
+	EnableEncoding     bool
+	EncodingThreads    int
+	EncodingCrf        int
+	EncodingResolution int
+	EnableHevcEncoding bool
 }
 
 func (j *SettingValue) Scan(value interface{}) error {

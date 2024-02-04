@@ -136,6 +136,30 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 				</div>
 				<div class="field">
 					<div class="control">
+						<input
+							class="input"
+							type="number"
+							name="EncodingResolution"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(fmt.Sprint(v.EncodingResolution)) }
+							min="100"
+							max="5000"
+						/>
+						Encoding Resolution (100-5000)
+					</div>
+				</div>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableHevcEncoding"
+							checked?={ helper.PStrToStr(v.EnableHevcEncoding) == "checked" || helper.PStrToStr(v.EnableHevcEncoding) == "on" }
+						/>
+						Enable Hevc Encoding
+					</label>
+				</div>
+				<div class="field">
+					<div class="control">
 						<button type="submit" class="button is-primary">Save</button>
 					</div>
 				</div>

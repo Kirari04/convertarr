@@ -176,7 +176,25 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"1\" max=\"50\"> Encoding Crf (1-50)</div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"1\" max=\"50\"> Encoding Crf (1-50)</div></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingResolution\" style=\"max-width: 400px;\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.EscapeString(fmt.Sprint(v.EncodingResolution))))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"100\" max=\"5000\"> Encoding Resolution (100-5000)</div></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableHevcEncoding\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableHevcEncoding) == "checked" || helper.PStrToStr(v.EnableHevcEncoding) == "on" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Hevc Encoding</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

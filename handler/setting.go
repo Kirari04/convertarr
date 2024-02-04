@@ -47,10 +47,22 @@ func GetSetting(c echo.Context) error {
 		v.EnableEncoding = nil
 	}
 
+	if app.Setting.EnableHevcEncoding {
+		v.EnableHevcEncoding = &on
+	} else {
+		v.EnableHevcEncoding = nil
+	}
+
 	if app.Setting.EncodingCrf <= 0 {
 		v.EncodingCrf = 25
 	} else {
 		v.EncodingCrf = app.Setting.EncodingCrf
+	}
+
+	if app.Setting.EncodingResolution <= 100 {
+		v.EncodingResolution = 1920
+	} else {
+		v.EncodingResolution = app.Setting.EncodingResolution
 	}
 
 	v.EncodingThreads = app.Setting.EncodingThreads
@@ -141,8 +153,25 @@ func PostSetting(c echo.Context) error {
 		app.Setting.EnableEncoding = false
 	}
 
+	if v.EnableHevcEncoding != nil && *v.EnableHevcEncoding == "on" {
+		app.Setting.EnableHevcEncoding = true
+	} else {
+		app.Setting.EnableHevcEncoding = false
+	}
+
 	if app.Setting.EnableEncoding {
 		app.Setting.EncodingCrf = v.EncodingCrf
+		if v.EncodingResolution%2 != 0 {
+			return helper.Render(c,
+				http.StatusBadRequest,
+				views.Setting(
+					helper.TCtxWError(c, errors.New("EncodingResolution is not even")),
+					fmt.Sprintf("%s - Setting", app.Name),
+					v,
+				),
+			)
+		}
+		app.Setting.EncodingResolution = v.EncodingResolution
 		if v.EncodingThreads > runtime.NumCPU() {
 			return helper.Render(c,
 				http.StatusBadRequest,
