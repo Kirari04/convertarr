@@ -19,8 +19,33 @@ import (
 
 func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_chartData_f0dd`,
-		Function: `function __templ_chartData_f0dd(resources, maxResourcesHistory){var options = {
+		Name: `__templ_chartData_31e2`,
+		Function: `function __templ_chartData_31e2(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
+		if(!data){
+			return [0]
+		}
+		const maxLen = 24;
+		const currentLen = data.length;
+		if(currentLen <= maxLen) {
+			return data;
+		}
+		const ratio = Math.ceil(currentLen / maxLen)
+		let newData = []
+		for(let i = 0; i < maxLen; i++){
+			let dataSlice = [];
+			for(let x = 0; x < ratio; x++){
+				if(data[x * i]){
+					dataSlice.push(data[x * i])
+				}
+			}
+			const sum = dataSlice.reduce((a, b) => a + b, 0);
+			const avg = (sum / dataSlice.length) || 0;
+			newData.push(avg)
+		}
+		return newData;
+	}
+
+	var options = {
 		chart: {
 			type: "line",
 			height: "300px",
@@ -29,11 +54,11 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
 		series: [
 			{
 				name: "Cpu Ussage",
-				data: resources.Cpu,
+				data: optimizeChartSeries(resources.Cpu),
 			},
 			{
 				name: "Memory Ussage",
-				data: resources.Mem,
+				data: optimizeChartSeries(resources.Mem),
 			}
 		],
 		xaxis: {
@@ -68,11 +93,11 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
 		series: [
 			{
 				name: "NetOut",
-				data: resources.NetOut,
+				data: optimizeChartSeries(resources.NetOut),
 			},
 			{
 				name: "NetIn",
-				data: resources.NetIn,
+				data: optimizeChartSeries(resources.NetIn),
 			}
 		],
 		xaxis: {
@@ -119,8 +144,8 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
 		return bytes.toFixed(dp) + ' ' + units[u];
 	}
 }`,
-		Call:       templ.SafeScript(`__templ_chartData_f0dd`, resources, maxResourcesHistory),
-		CallInline: templ.SafeScriptInline(`__templ_chartData_f0dd`, resources, maxResourcesHistory),
+		Call:       templ.SafeScript(`__templ_chartData_31e2`, resources, maxResourcesHistory),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_31e2`, resources, maxResourcesHistory),
 	}
 }
 
@@ -150,7 +175,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage str
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(app.FilesToEncode)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 121, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 146, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -163,7 +188,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage str
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(savedStorage)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 127, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 152, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -176,7 +201,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage str
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(encodedFiles)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 133, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 158, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

@@ -8,6 +8,31 @@ import (
 )
 
 script chartData(resources t.Resources, maxResourcesHistory int) {
+	const optimizeChartSeries = (data) => {
+		if(!data){
+			return [0]
+		}
+		const maxLen = 24;
+		const currentLen = data.length;
+		if(currentLen <= maxLen) {
+			return data;
+		}
+		const ratio = Math.ceil(currentLen / maxLen)
+		let newData = []
+		for(let i = 0; i < maxLen; i++){
+			let dataSlice = [];
+			for(let x = 0; x < ratio; x++){
+				if(data[x * i]){
+					dataSlice.push(data[x * i])
+				}
+			}
+			const sum = dataSlice.reduce((a, b) => a + b, 0);
+			const avg = (sum / dataSlice.length) || 0;
+			newData.push(avg)
+		}
+		return newData;
+	}
+
 	var options = {
 		chart: {
 			type: "line",
@@ -17,11 +42,11 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 		series: [
 			{
 				name: "Cpu Ussage",
-				data: resources.Cpu,
+				data: optimizeChartSeries(resources.Cpu),
 			},
 			{
 				name: "Memory Ussage",
-				data: resources.Mem,
+				data: optimizeChartSeries(resources.Mem),
 			}
 		],
 		xaxis: {
@@ -56,11 +81,11 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 		series: [
 			{
 				name: "NetOut",
-				data: resources.NetOut,
+				data: optimizeChartSeries(resources.NetOut),
 			},
 			{
 				name: "NetIn",
-				data: resources.NetIn,
+				data: optimizeChartSeries(resources.NetIn),
 			}
 		],
 		xaxis: {
