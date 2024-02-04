@@ -1,3 +1,4 @@
 tmp/
 *.sqlite
 .git
+tmp.mkv

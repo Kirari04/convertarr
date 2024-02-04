@@ -54,17 +54,33 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 										switch history.Status {
 											case "encoding":
 												<span class="tag is-link">{ history.Status }</span>
-                                            case "copy":
+											case "copy":
 												<span class="tag is-link">{ history.Status }</span>
-                                            case "failed":
+											case "failed":
 												<span class="tag is-danger">{ history.Status }</span>
-                                            case "finished":
+											case "finished":
 												<span class="tag is-success">{ history.Status }</span>
 											default:
 												<span class="tag">{ history.Status }</span>
 										}
 									</td>
 								</tr>
+								if history.Status == "failed" {
+									<tr>
+										<td colspan="6">
+											<article class="message is-dark is-small">
+												<div class="message-body">
+													<p>
+														<strong>
+															Error Message
+														</strong>
+													</p>
+													{ templ.EscapeString(history.Error) }
+												</div>
+											</article>
+										</td>
+									</tr>
+								}
 							}
 						</tbody>
 					</table>
