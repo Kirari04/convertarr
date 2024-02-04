@@ -99,7 +99,7 @@ func encodeFile(file string) {
 			"-pix_fmt yuv420p " + // YUV 4:2:0
 			"-profile:v high " + // force 8 bit
 			fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
-			"-filter:v scale=1920:-1 " + // setting resolution
+			"-filter:v scale=1920:-2 " + // setting resolution
 			"-y " +
 			fmt.Sprintf(`"%s"`, output)
 
