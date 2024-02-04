@@ -18,3 +18,4 @@ var TemporaryDb bool
 var ResourcesHistory t.Resources
 var MaxResourcesHistory = 1000
 var JwtSecret string = "secret"
+var FilesToEncode []string

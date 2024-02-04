@@ -5,4 +5,5 @@ func Setup() {
 	Migrate()
 	Seed()
 	Resources()
+	Scanner()
 }
