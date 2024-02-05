@@ -56,13 +56,15 @@ func PostSetup(c echo.Context) error {
 		)
 	}
 
+	settingTmp := *app.Setting
+
 	if v.EnableAuthentication != nil && *v.EnableAuthentication == "on" {
-		app.Setting.EnableAuthentication = true
+		settingTmp.EnableAuthentication = true
 	} else {
-		app.Setting.EnableAuthentication = false
+		settingTmp.EnableAuthentication = false
 	}
 
-	if app.Setting.EnableAuthentication {
+	if settingTmp.EnableAuthentication {
 		if v.AuthenticationType == nil {
 			return helper.Render(c,
 				http.StatusBadRequest,
@@ -116,7 +118,7 @@ func PostSetup(c echo.Context) error {
 			)
 		}
 
-		app.Setting.AuthenticationType = v.AuthenticationType
+		settingTmp.AuthenticationType = v.AuthenticationType
 
 		pwdHash, err := bcrypt.GenerateFromPassword([]byte(*v.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -132,11 +134,11 @@ func PostSetup(c echo.Context) error {
 		}
 
 		// create user
-		app.Setting.Username = *v.Username
-		app.Setting.PwdHash = string(pwdHash)
+		settingTmp.Username = *v.Username
+		settingTmp.PwdHash = string(pwdHash)
 	}
 
-	app.Setting.HasBeenSetup = true
+	settingTmp.HasBeenSetup = true
 
 	var setting m.Setting
 	if err := app.DB.First(&setting).Error; err != nil {
@@ -151,7 +153,7 @@ func PostSetup(c echo.Context) error {
 		)
 	}
 
-	setting.Value = *app.Setting
+	setting.Value = settingTmp
 
 	if err := app.DB.Save(&setting).Error; err != nil {
 		c.Echo().Logger.Error("Failed to update setting", err)
@@ -164,6 +166,8 @@ func PostSetup(c echo.Context) error {
 			),
 		)
 	}
+
+	app.Setting = &settingTmp
 
 	return c.Redirect(http.StatusFound, "/")
 }
