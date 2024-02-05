@@ -3,6 +3,7 @@ package setup
 import (
 	"bytes"
 	"encoder/app"
+	"encoder/helper"
 	"encoder/m"
 	"fmt"
 	"os"
@@ -100,10 +101,12 @@ func encodeFile(file string) {
 				fmt.Sprintf(`-i "%s" `, file) + // input file
 				// "-max_muxing_queue_size 9999 " +
 				fmt.Sprintf("-threads %d ", app.Setting.EncodingThreads) +
-				"-c:a ac3 -b:a 640k " +
+				"-c:a copy " +
 				"-c:s copy " +
 				"-c:v libx265 " + // setting video codec libx265 | libaom-av1
-				"-map 0 " +
+				"-map 0:v:0 " +
+				"-map 0:a " +
+				"-map 0:s " +
 				// "-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
@@ -112,13 +115,15 @@ func encodeFile(file string) {
 				fmt.Sprintf(`"%s"`, tmpOutput)
 	} else {
 		ffmpegCommand =
-			"nice -n 15 ffmpeg " +
+			"ffmpeg " +
 				fmt.Sprintf(`-i "%s" `, file) + // input file
 				fmt.Sprintf("-threads %d ", app.Setting.EncodingThreads) +
 				"-c:a copy " +
 				"-c:s copy " +
 				"-c:v libx264 " + // setting video codec libx264 | libaom-av1
-				"-map 0 " +
+				"-map 0:v:0 " +
+				"-map 0:a " +
+				"-map 0:s " +
 				"-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v high " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
@@ -152,7 +157,7 @@ func encodeFile(file string) {
 		log.Errorf("Failed to update history %v\n", err)
 	}
 
-	if err := os.Rename(tmpOutput, output); err != nil {
+	if err := helper.Move(tmpOutput, output); err != nil {
 		if err := history.Failed(app.DB, fmt.Sprintf("Failed to copy encoded file to output path: %v", err)); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
 		}
