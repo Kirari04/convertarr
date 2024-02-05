@@ -21,14 +21,18 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 		let newData = []
 		for(let i = 0; i < maxLen; i++){
 			let dataSlice = [];
+			// console.log("combine " + i)
 			for(let x = 0; x < ratio; x++){
-				if(data[x * i]){
+				// console.log("data " + ((i * ratio) + x))
+				if(data[((i * ratio) + x)]){
 					dataSlice.push(data[x * i])
 				}
 			}
-			const sum = dataSlice.reduce((a, b) => a + b, 0);
-			const avg = (sum / dataSlice.length) || 0;
-			newData.push(avg)
+			if(dataSlice.length > 0){
+				const sum = dataSlice.reduce((a, b) => a + b, 0);
+				const avg = (sum / dataSlice.length) || 0;
+				newData.push(avg)	
+			}
 		}
 		return newData;
 	}
