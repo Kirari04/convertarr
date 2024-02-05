@@ -100,9 +100,11 @@ func PostSetting(c echo.Context) error {
 		)
 	}
 
+	settingTmp := *app.Setting
+
 	if v.EnableAuthentication != nil && *v.EnableAuthentication == "on" {
 		// check if user had been already created
-		if app.Setting.Username == "" {
+		if settingTmp.Username == "" {
 			return helper.Render(c,
 				http.StatusBadRequest,
 				views.Setting(
@@ -113,12 +115,12 @@ func PostSetting(c echo.Context) error {
 			)
 		}
 
-		app.Setting.EnableAuthentication = true
+		settingTmp.EnableAuthentication = true
 	} else {
-		app.Setting.EnableAuthentication = false
+		settingTmp.EnableAuthentication = false
 	}
 
-	if app.Setting.EnableAuthentication {
+	if settingTmp.EnableAuthentication {
 		if v.AuthenticationType == nil {
 			return helper.Render(c,
 				http.StatusBadRequest,
@@ -130,37 +132,37 @@ func PostSetting(c echo.Context) error {
 			)
 		}
 
-		app.Setting.AuthenticationType = v.AuthenticationType
+		settingTmp.AuthenticationType = v.AuthenticationType
 	}
 
 	if v.EnableAutomaticScanns != nil && *v.EnableAutomaticScanns == "on" {
-		app.Setting.EnableAutomaticScanns = true
+		settingTmp.EnableAutomaticScanns = true
 	} else {
-		app.Setting.EnableAutomaticScanns = false
+		settingTmp.EnableAutomaticScanns = false
 	}
 
 	if v.AutomaticScannsAtStartup != nil && *v.AutomaticScannsAtStartup == "on" {
-		app.Setting.AutomaticScannsAtStartup = true
+		settingTmp.AutomaticScannsAtStartup = true
 	} else {
-		app.Setting.AutomaticScannsAtStartup = false
+		settingTmp.AutomaticScannsAtStartup = false
 	}
 
-	app.Setting.AutomaticScannsInterval = time.Duration(v.AutomaticScannsInterval) * time.Minute
+	settingTmp.AutomaticScannsInterval = time.Duration(v.AutomaticScannsInterval) * time.Minute
 
 	if v.EnableEncoding != nil && *v.EnableEncoding == "on" {
-		app.Setting.EnableEncoding = true
+		settingTmp.EnableEncoding = true
 	} else {
-		app.Setting.EnableEncoding = false
+		settingTmp.EnableEncoding = false
 	}
 
 	if v.EnableHevcEncoding != nil && *v.EnableHevcEncoding == "on" {
-		app.Setting.EnableHevcEncoding = true
+		settingTmp.EnableHevcEncoding = true
 	} else {
-		app.Setting.EnableHevcEncoding = false
+		settingTmp.EnableHevcEncoding = false
 	}
 
-	if app.Setting.EnableEncoding {
-		app.Setting.EncodingCrf = v.EncodingCrf
+	if settingTmp.EnableEncoding {
+		settingTmp.EncodingCrf = v.EncodingCrf
 		if v.EncodingResolution%2 != 0 {
 			return helper.Render(c,
 				http.StatusBadRequest,
@@ -171,7 +173,7 @@ func PostSetting(c echo.Context) error {
 				),
 			)
 		}
-		app.Setting.EncodingResolution = v.EncodingResolution
+		settingTmp.EncodingResolution = v.EncodingResolution
 		if v.EncodingThreads > runtime.NumCPU() {
 			return helper.Render(c,
 				http.StatusBadRequest,
@@ -182,7 +184,7 @@ func PostSetting(c echo.Context) error {
 				),
 			)
 		}
-		app.Setting.EncodingThreads = v.EncodingThreads
+		settingTmp.EncodingThreads = v.EncodingThreads
 	}
 
 	var setting m.Setting
@@ -198,7 +200,7 @@ func PostSetting(c echo.Context) error {
 		)
 	}
 
-	setting.Value = *app.Setting
+	setting.Value = settingTmp
 
 	if err := app.DB.Save(&setting).Error; err != nil {
 		c.Echo().Logger.Error("Failed to update setting", err)
@@ -211,6 +213,8 @@ func PostSetting(c echo.Context) error {
 			),
 		)
 	}
+
+	app.Setting = &settingTmp
 
 	return c.Redirect(http.StatusFound, "/setting")
 }
