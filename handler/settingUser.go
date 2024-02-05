@@ -50,7 +50,9 @@ func PostSettingUser(c echo.Context) error {
 		)
 	}
 
-	app.Setting.Username = v.Username
+	settingTmp := *app.Setting
+
+	settingTmp.Username = v.Username
 	if len(v.Password) > 0 {
 		pwdHash, err := bcrypt.GenerateFromPassword([]byte(v.Password), bcrypt.DefaultCost)
 		if err != nil {
@@ -64,7 +66,7 @@ func PostSettingUser(c echo.Context) error {
 				),
 			)
 		}
-		app.Setting.PwdHash = string(pwdHash)
+		settingTmp.PwdHash = string(pwdHash)
 	}
 
 	var setting m.Setting
@@ -80,7 +82,7 @@ func PostSettingUser(c echo.Context) error {
 		)
 	}
 
-	setting.Value = *app.Setting
+	setting.Value = settingTmp
 
 	if err := app.DB.Save(&setting).Error; err != nil {
 		c.Echo().Logger.Error("Failed to update setting", err)
@@ -93,6 +95,8 @@ func PostSettingUser(c echo.Context) error {
 			),
 		)
 	}
+
+	app.Setting = &settingTmp
 
 	return c.Redirect(http.StatusFound, "/setting/user")
 }
