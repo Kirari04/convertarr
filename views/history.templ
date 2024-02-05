@@ -6,6 +6,7 @@ import (
 	"encoder/m"
 	"github.com/dustin/go-humanize"
 	"fmt"
+	"time"
 )
 
 templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
@@ -48,12 +49,23 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 										{ humanize.Bytes(history.NewSize) }
 									</td>
 									<td>
-										{ fmt.Sprintf("%s", history.TimeTaken) }
+										if history.TimeTaken.Seconds() == 0 && history.Status == "encoding" {
+											{ 
+												fmt.Sprintf(
+													"%s",
+													time.Duration(
+														time.Now().Unix() - history.CreatedAt.Unix(),
+													) * time.Second,
+												),
+											 }
+										} else {
+											{ fmt.Sprintf("%s", history.TimeTaken) }
+										}
 									</td>
 									<td>
 										switch history.Status {
 											case "encoding":
-												<span class="tag is-link">{ history.Status }</span>
+												<span class="tag is-link">{ fmt.Sprintf("%.0f%%", history.Progress * 100) } { history.Status }</span>
 											case "copy":
 												<span class="tag is-link">{ history.Status }</span>
 											case "failed":

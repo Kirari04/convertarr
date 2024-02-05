@@ -18,6 +18,7 @@ require (
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	golang.org/x/time v0.5.0 // indirect
+	gopkg.in/vansante/go-ffprobe.v2 v2.1.1 // indirect
 )
 
 require (

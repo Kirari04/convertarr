@@ -16,6 +16,7 @@ type History struct {
 	OldSize   uint64
 	NewSize   uint64
 	TimeTaken time.Duration
+	Progress  float64
 	Error     string `gorm:"size:10000"`
 	Status    string // encoding | failed | finished | copy
 }
@@ -31,6 +32,15 @@ func (j *History) Create(DB *gorm.DB, OldPath string) error {
 
 func (j *History) SetNewPath(DB *gorm.DB, NewPath string) error {
 	j.NewPath = NewPath
+	if err := DB.Save(j).Error; err != nil {
+		log.Error("Failed to save history", err)
+		return err
+	}
+	return nil
+}
+
+func (j *History) SetProgress(DB *gorm.DB, Progress float64) error {
+	j.Progress = Progress
 	if err := DB.Save(j).Error; err != nil {
 		log.Error("Failed to save history", err)
 		return err

@@ -2,17 +2,25 @@ package setup
 
 import (
 	"bytes"
+	"context"
+	"crypto/sha256"
 	"encoder/app"
 	"encoder/helper"
 	"encoder/m"
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
+	"path"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
+	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
+	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
 func Encoder() {
@@ -90,6 +98,38 @@ func encodeFile(file string) {
 	if err := history.Encoding(app.DB); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
+
+	// probe file so we can show encoding progress
+	// ffprobe context
+	ctx, cancelFn := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancelFn()
+
+	// probe file
+	data, err := ffprobe.ProbeURL(ctx, file)
+	if err != nil {
+		if err := history.Failed(app.DB, err.Error()); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+		return
+	}
+	dataStreams := data.StreamType(ffprobe.StreamAny)
+	videoDuration := data.Format.Duration().Seconds()
+	hasVideoStream := false
+
+	// loop over streams in file
+	for _, streamInfo := range dataStreams {
+		if streamInfo.CodecType == "video" {
+			hasVideoStream = true
+		}
+	}
+
+	if !hasVideoStream {
+		if err := history.Failed(app.DB, "No video stream detected"); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+		return
+	}
+
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
@@ -111,8 +151,12 @@ func encodeFile(file string) {
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
-				"-y " +
-				fmt.Sprintf(`"%s"`, tmpOutput)
+				fmt.Sprintf(`"%s" `, tmpOutput) +
+				fmt.Sprintf("-progress unix://%s -y", tempSock(
+					videoDuration,
+					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+					history,
+				)) // progress tracking
 	} else {
 		ffmpegCommand =
 			"ffmpeg " +
@@ -128,8 +172,12 @@ func encodeFile(file string) {
 				"-profile:v high " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
-				"-y " +
-				fmt.Sprintf(`"%s"`, tmpOutput)
+				fmt.Sprintf(`"%s" `, tmpOutput) +
+				fmt.Sprintf("-progress unix://%s -y", tempSock(
+					videoDuration,
+					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+					history,
+				)) // progress tracking
 	}
 	startTime := time.Now()
 	cmd := exec.Command(
@@ -189,4 +237,55 @@ func encodeFile(file string) {
 	if err := history.Finished(app.DB, uint64(oldSize), uint64(newSize), time.Duration(endTime.Unix()-startTime.Unix())*time.Second); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
+}
+
+func tempSock(totalDuration float64, sockFileName string, encodingTask *m.History) string {
+	sockFilePath := path.Join(os.TempDir(), sockFileName)
+	l, err := net.Listen("unix", sockFilePath)
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		re := regexp.MustCompile(`out_time_ms=(\d+)`)
+		fd, err := l.Accept()
+		if err != nil {
+			log.Fatal("accept error:", err)
+		}
+		buf := make([]byte, 16)
+		data := ""
+		progress := ""
+		for {
+			_, err := fd.Read(buf)
+			if err != nil {
+				return
+			}
+			data += string(buf)
+			a := re.FindAllStringSubmatch(data, -1)
+			cp := ""
+			if len(a) > 0 && len(a[len(a)-1]) > 0 {
+				c, _ := strconv.Atoi(a[len(a)-1][len(a[len(a)-1])-1])
+				cp = fmt.Sprintf("%.2f", float64(c)/totalDuration/1000000)
+			}
+			if strings.Contains(data, "progress=end") {
+				cp = "1.0"
+			}
+			if cp == "" {
+				cp = ".0"
+			}
+			if cp != progress {
+				progress = cp
+				// fmt.Println("progress: ", progress)
+				floatProg, err := strconv.ParseFloat(progress, 64)
+				if err != nil {
+					fmt.Println("could not save progress in database")
+				}
+				if floatProg != 0 {
+					encodingTask.SetProgress(app.DB, floatProg)
+				}
+			}
+		}
+	}()
+
+	return sockFilePath
 }

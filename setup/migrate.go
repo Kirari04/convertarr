@@ -106,6 +106,43 @@ func Migrate() {
 					return tx.Migrator().DropColumn(History{}, "time_taken")
 				},
 			},
+			{
+				ID: "7",
+				Migrate: func(tx *gorm.DB) error {
+					type History struct {
+						ID        uint `gorm:"primarykey"`
+						CreatedAt time.Time
+						UpdatedAt time.Time
+						OldPath   string
+						NewPath   string
+						OldSize   uint64
+						NewSize   uint64
+						TimeTaken time.Duration
+						Progress  float64
+						Error     string `gorm:"size:10000"`
+						Status    string // encoding | failed | finished | copy
+					}
+
+					return tx.AutoMigrate(&History{})
+				},
+				Rollback: func(tx *gorm.DB) error {
+					type History struct {
+						ID        uint `gorm:"primarykey"`
+						CreatedAt time.Time
+						UpdatedAt time.Time
+						OldPath   string
+						NewPath   string
+						OldSize   uint64
+						NewSize   uint64
+						TimeTaken time.Duration
+						Progress  float64
+						Error     string `gorm:"size:10000"`
+						Status    string // encoding | failed | finished | copy
+					}
+
+					return tx.Migrator().DropColumn(History{}, "progress")
+				},
+			},
 		},
 	)
 
