@@ -25,6 +25,9 @@ func GetIndex(c echo.Context) error {
 			"SUM(histories.new_size) as sum_new_size",
 			"SUM(histories.old_size) as sum_old_size",
 		).
+		Where(&m.History{
+			Status: "finished",
+		}).
 		Scan(&historyStatsRes).
 		Error; err != nil {
 		log.Error("Failed to get history stats", err)
