@@ -91,6 +91,8 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 					return c.String(http.StatusUnauthorized, "Unauthorized")
 				}
 
+				c.Set("IsAuth", true)
+
 				return next(c)
 			}
 			if c.Request().URL.Path != "/login" {
