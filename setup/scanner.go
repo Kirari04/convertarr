@@ -12,20 +12,20 @@ import (
 func Scanner() {
 	if app.Setting.AutomaticScannsAtStartup {
 		go func() {
-			scannFolders()
+			ScannFolders()
 		}()
 	}
 	go func() {
 		for {
 			time.Sleep(time.Second * 30)
 			if app.Setting.LastFolderScann.Before(time.Now().Add(app.Setting.AutomaticScannsInterval * -1)) {
-				scannFolders()
+				ScannFolders()
 			}
 		}
 	}()
 }
 
-func scannFolders() {
+func ScannFolders() {
 	log.Info("Starting scanning of folders")
 	app.Setting.LastFolderScann = time.Now()
 	app.Setting.Save(app.DB)

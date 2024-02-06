@@ -14,6 +14,11 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 		<article class="message">
 			<div class="message-header">
 				<p>History</p>
+				<form action="/scanner" method="post">
+					<button type="submit" class="button is-primary">
+						Scann Folders Now
+					</button>
+				</form>
 			</div>
 			<div class="message-body">
 				<h2 class="subtitle is-4">Encoding History</h2>
@@ -22,7 +27,7 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 						No files encodet yet
 					</div>
 				} else {
-					<table class="table">
+					<table class="table is-fullwidth">
 						<thead>
 							<tr>
 								<th>Created At</th>
