@@ -13,4 +13,5 @@ type SettingValidator struct {
 	EncodingCrf        int     `form:"EncodingCrf" validate:"omitempty,number,gte=1,lte=50"`
 	EncodingResolution int     `form:"EncodingResolution" validate:"omitempty,number,gte=100,lte=5000"`
 	EnableHevcEncoding *string `form:"EnableHevcEncoding" validate:"omitempty,oneof=on off"`
+	EncodingMaxRetry   int     `form:"EncodingMaxRetry" validate:"omitempty,number,gte=0,lte=999"`
 }

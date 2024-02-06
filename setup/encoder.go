@@ -43,15 +43,38 @@ func Encoder() {
 	}()
 	go func() {
 		for {
-			time.Sleep(time.Second * 5)
 			if !app.Setting.EnableEncoding {
+				time.Sleep(time.Second * 5)
 				continue
 			}
 			if len(app.FilesToEncode) > 0 {
 				fileToEncode := app.FilesToEncode[0]
+				if app.Setting.EncodingMaxRetry > 0 {
+					hash, err := helper.HashFile(fileToEncode)
+					log.Debug("Failed to hash file to encode", err)
+					if err != nil {
+						app.FilesToEncode = app.FilesToEncode[1:]
+						continue
+					}
+					var tries int64
+					if err := app.DB.
+						Model(&m.History{}).
+						Where(&m.History{Hash: hash}).
+						Count(&tries).Error; err != nil {
+						log.Error("Failed to count encoding tries: ", err)
+						app.FilesToEncode = app.FilesToEncode[1:]
+						continue
+					}
+					if tries >= int64(app.Setting.EncodingMaxRetry) {
+						log.Debug("Reached max retries of file ", fileToEncode)
+						app.FilesToEncode = app.FilesToEncode[1:]
+						continue
+					}
+				}
 				encodeFile(fileToEncode)
 				app.FilesToEncode = app.FilesToEncode[1:]
 			}
+			time.Sleep(time.Second * 5)
 		}
 	}()
 }

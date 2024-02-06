@@ -208,7 +208,15 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Hevc Encoding</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Hevc Encoding</label></div><div class=\"field\"><div class=\"control\"><input class=\"input\" type=\"number\" name=\"EncodingMaxRetry\" style=\"max-width: 400px;\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.EscapeString(fmt.Sprint(v.EncodingMaxRetry))))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"0\" max=\"999\"> Encoding Max Retry (0-999)</div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

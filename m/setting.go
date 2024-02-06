@@ -35,10 +35,11 @@ type SettingValue struct {
 
 	// encoding
 	EnableEncoding     bool
+	EnableHevcEncoding bool
 	EncodingThreads    int
 	EncodingCrf        int
 	EncodingResolution int
-	EnableHevcEncoding bool
+	EncodingMaxRetry   int
 }
 
 func (j *SettingValue) Scan(value interface{}) error {

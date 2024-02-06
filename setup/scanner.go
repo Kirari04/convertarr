@@ -44,7 +44,7 @@ func scannFolders() {
 		filesToEncode = append(filesToEncode, files...)
 	}
 
-	log.Infof("Found %d files for encoding", len(filesToEncode))
+	log.Infof("Found %d unencoded files", len(filesToEncode))
 	for _, fileToEncode := range filesToEncode {
 		var exists bool
 		for _, existingFile := range app.FilesToEncode {

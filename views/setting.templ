@@ -166,6 +166,20 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 				</div>
 				<div class="field">
 					<div class="control">
+						<input
+							class="input"
+							type="number"
+							name="EncodingMaxRetry"
+							style="max-width: 400px;"
+							value={ templ.EscapeString(fmt.Sprint(v.EncodingMaxRetry)) }
+							min="0"
+							max="999"
+						/>
+						Encoding Max Retry (0-999)
+					</div>
+				</div>
+				<div class="field">
+					<div class="control">
 						<button type="submit" class="button is-primary">Save</button>
 					</div>
 				</div>
