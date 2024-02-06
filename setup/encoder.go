@@ -84,6 +84,20 @@ func encodeFile(file string) {
 		return
 	}
 	oldSize := fi.Size()
+	if err := history.SetOldSize(app.DB, uint64(oldSize)); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
+
+	hash, err := helper.HashFile(file)
+	if err != nil {
+		if err := history.Failed(app.DB, err.Error()); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+		return
+	}
+	if err := history.SetHash(app.DB, hash); err != nil {
+		log.Errorf("Failed to update history %v\n", err)
+	}
 
 	output := strings.TrimSuffix(file, ".mkv")
 	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
@@ -234,7 +248,7 @@ func encodeFile(file string) {
 	newSize := fi.Size()
 
 	log.Infof("Old Size: %s / New Size: %s\n", humanize.Bytes(uint64(oldSize)), humanize.Bytes(uint64(newSize)))
-	if err := history.Finished(app.DB, uint64(oldSize), uint64(newSize), time.Duration(endTime.Unix()-startTime.Unix())*time.Second); err != nil {
+	if err := history.Finished(app.DB, uint64(newSize), time.Duration(endTime.Unix()-startTime.Unix())*time.Second); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
 }
