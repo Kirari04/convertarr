@@ -60,12 +60,17 @@ templ Navbar(Ctx t.TemplCtx) {
 			<div class="navbar-end">
 				<div class="navbar-item">
 					<div class="buttons">
-						if Ctx.IsAuth {
+						if Ctx.IsAuth && app.Setting.EnableAuthentication && app.Setting.AuthenticationType != nil && *app.Setting.AuthenticationType != "basic" {
 							<form action="/logout" method="post">
 								<button type="submit" class="button is-danger">
 									Logout
 								</button>
 							</form>
+						}
+						if Ctx.IsAuth && app.Setting.EnableAuthentication && app.Setting.AuthenticationType != nil && *app.Setting.AuthenticationType == "basic" {
+							<span class="tag is-info">
+								Using Basic Auth
+							</span>
 						}
 					</div>
 				</div>

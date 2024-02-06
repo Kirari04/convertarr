@@ -88,8 +88,14 @@ func Navbar(Ctx t.TemplCtx) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if Ctx.IsAuth {
+		if Ctx.IsAuth && app.Setting.EnableAuthentication && app.Setting.AuthenticationType != nil && *app.Setting.AuthenticationType != "basic" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form action=\"/logout\" method=\"post\"><button type=\"submit\" class=\"button is-danger\">Logout</button></form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if Ctx.IsAuth && app.Setting.EnableAuthentication && app.Setting.AuthenticationType != nil && *app.Setting.AuthenticationType == "basic" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"tag is-info\">Using Basic Auth</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
