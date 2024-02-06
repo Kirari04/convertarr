@@ -4,9 +4,7 @@ import (
 	"encoder/layouts"
 	"encoder/t"
 	"encoder/m"
-	"github.com/dustin/go-humanize"
-	"fmt"
-	"time"
+	"encoder/components"
 )
 
 templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
@@ -27,80 +25,9 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 						No files encodet yet
 					</div>
 				} else {
-					<table class="table is-fullwidth">
-						<thead>
-							<tr>
-								<th>Created At</th>
-								<th>Path</th>
-								<th>OldSize</th>
-								<th>NewSize</th>
-								<th>TimeTaken</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							for _, history := range histories {
-								<tr>
-									<td>
-										{ history.CreatedAt.Format("2006-01-02 15:04:05") }
-									</td>
-									<td>
-										{ history.OldPath }
-									</td>
-									<td>
-										{ humanize.Bytes(history.OldSize) }
-									</td>
-									<td>
-										{ humanize.Bytes(history.NewSize) }
-									</td>
-									<td>
-										if history.TimeTaken.Seconds() == 0 && history.Status == "encoding" {
-											{ 
-												fmt.Sprintf(
-													"%s",
-													time.Duration(
-														time.Now().Unix() - history.CreatedAt.Unix(),
-													) * time.Second,
-												),
-											 }
-										} else {
-											{ fmt.Sprintf("%s", history.TimeTaken) }
-										}
-									</td>
-									<td>
-										switch history.Status {
-											case "encoding":
-												<span class="tag is-link">{ fmt.Sprintf("%.0f%%", history.Progress * 100) } { history.Status }</span>
-											case "copy":
-												<span class="tag is-link">{ history.Status }</span>
-											case "failed":
-												<span class="tag is-danger">{ history.Status }</span>
-											case "finished":
-												<span class="tag is-success">{ history.Status }</span>
-											default:
-												<span class="tag">{ history.Status }</span>
-										}
-									</td>
-								</tr>
-								if history.Status == "failed" {
-									<tr>
-										<td colspan="6">
-											<article class="message is-dark is-small">
-												<div class="message-body">
-													<p>
-														<strong>
-															Error Message
-														</strong>
-													</p>
-													{ templ.EscapeString(history.Error) }
-												</div>
-											</article>
-										</td>
-									</tr>
-								}
-							}
-						</tbody>
-					</table>
+					<div hx-get="/history/table" hx-trigger="every 5s">
+						@components.HistoryTable(Ctx, histories)
+					</div>
 				}
 			</div>
 		</article>

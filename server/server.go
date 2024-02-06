@@ -33,6 +33,7 @@ func Serve() {
 	e.POST("/setup", handler.PostSetup)
 	e.POST("/scanner", handler.PostScanner)
 	e.GET("/history", handler.GetHistory)
+	e.GET("/history/table", handler.GetHistoryTable)
 	e.GET("/setting", handler.GetSetting)
 	e.POST("/setting", handler.PostSetting)
 	e.GET("/setting/user", handler.GetSettingUser)
