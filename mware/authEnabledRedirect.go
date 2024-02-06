@@ -2,17 +2,23 @@ package mware
 
 import (
 	"encoder/app"
+	"encoding/base64"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if app.Setting.EnableAuthentication {
+			if c.Request().URL.Path == "/favicon.ico" {
+				return next(c)
+			}
 			if app.Setting.AuthenticationType == nil {
 				c.Logger().Error("AuthenticationType is nil while EnableAuthentication is true")
 				return c.NoContent(http.StatusInternalServerError)
@@ -55,14 +61,39 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 					return next(c)
 				}
 
-				if c.Request().URL.Path != "/login" && c.Request().URL.Path != "/favicon.ico" {
+				if c.Request().URL.Path != "/login" {
 					return c.Redirect(http.StatusFound, "/login")
 				}
 			}
 			if *app.Setting.AuthenticationType == "basic" {
-				return c.NoContent(http.StatusNotImplemented)
+				basicRawCredentials := c.Request().Header.Get("Authorization")
+				if basicRawCredentials == "" {
+					c.Response().Header().Add("WWW-Authenticate", `Basic realm="Restricted Access"`)
+					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+
+				basicRawCredentials = strings.TrimPrefix(basicRawCredentials, "Basic ")
+
+				basicCredentials, err := base64.StdEncoding.DecodeString(basicRawCredentials)
+				if err != nil {
+					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+				credentialsSlice := strings.Split(string(basicCredentials), ":")
+				if len(credentialsSlice) != 2 {
+					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+
+				if app.Setting.Username != credentialsSlice[0] {
+					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+
+				if err := bcrypt.CompareHashAndPassword([]byte(app.Setting.PwdHash), []byte(credentialsSlice[1])); err != nil {
+					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+
+				return next(c)
 			}
-			if c.Request().URL.Path != "/login" && c.Request().URL.Path != "/favicon.ico" {
+			if c.Request().URL.Path != "/login" {
 				c.Logger().Error("unknown AuthenticationType: ", *app.Setting.AuthenticationType)
 				return c.NoContent(http.StatusInternalServerError)
 			}
