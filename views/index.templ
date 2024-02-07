@@ -7,11 +7,20 @@ import (
 	"fmt"
 )
 
-templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage string, encodedFiles string) {
+templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, savedStorage string, encodedFiles string) {
 	@layouts.Default(Ctx, Title) {
 		<article class="message">
 			<div class="message-header">
 				<p>Server Resource Ussage</p>
+				if longStats {
+					<a href="/" class="button is-primary">
+						Live Stats
+					</a>
+				} else {
+					<a href="/?long=yes" class="button is-primary">
+						Long Stats
+					</a>
+				}
 			</div>
 			<div class="message-body">
 				<nav class="level">
@@ -34,6 +43,15 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage st
 						</div>
 					</div>
 				</nav>
+				if longStats {
+					<p>
+						Showing Long Stats (avg cpu ussage over long period of time)
+					</p>
+				} else {
+					<p>
+						Showing Short Stats (more accurate cpu ussage over short period of time)
+					</p>
+				}
 				<div id="chart"></div>
 				<div id="chart2"></div>
 			</div>
@@ -41,7 +59,6 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage st
 		@chartData(resources, app.MaxResourcesHistory)
 	}
 }
-
 
 script chartData(resources t.Resources, maxResourcesHistory int) {
 	const optimizeChartSeries = (data) => {
