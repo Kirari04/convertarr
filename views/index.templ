@@ -7,6 +7,42 @@ import (
 	"fmt"
 )
 
+templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage string, encodedFiles string) {
+	@layouts.Default(Ctx, Title) {
+		<article class="message">
+			<div class="message-header">
+				<p>Server Resource Ussage</p>
+			</div>
+			<div class="message-body">
+				<nav class="level">
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Files in queue</p>
+							<p class="title">{ fmt.Sprint(len(app.FilesToEncode)) }</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Saved storage</p>
+							<p class="title">{ savedStorage }</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Encoded Files</p>
+							<p class="title">{ encodedFiles }</p>
+						</div>
+					</div>
+				</nav>
+				<div id="chart"></div>
+				<div id="chart2"></div>
+			</div>
+		</article>
+		@chartData(resources, app.MaxResourcesHistory)
+	}
+}
+
+
 script chartData(resources t.Resources, maxResourcesHistory int) {
 	const optimizeChartSeries = (data) => {
 		if(!data){
@@ -134,40 +170,5 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 
 
 		return bytes.toFixed(dp) + ' ' + units[u];
-	}
-}
-
-templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, savedStorage string, encodedFiles string) {
-	@layouts.Default(Ctx, Title) {
-		<article class="message">
-			<div class="message-header">
-				<p>Server Resource Ussage</p>
-			</div>
-			<div class="message-body">
-				<nav class="level">
-					<div class="level-item has-text-centered">
-						<div>
-							<p class="heading">Files in queue</p>
-							<p class="title">{ fmt.Sprint(len(app.FilesToEncode)) }</p>
-						</div>
-					</div>
-					<div class="level-item has-text-centered">
-						<div>
-							<p class="heading">Saved storage</p>
-							<p class="title">{ savedStorage }</p>
-						</div>
-					</div>
-					<div class="level-item has-text-centered">
-						<div>
-							<p class="heading">Encoded Files</p>
-							<p class="title">{ encodedFiles }</p>
-						</div>
-					</div>
-				</nav>
-				<div id="chart"></div>
-				<div id="chart2"></div>
-			</div>
-		</article>
-		@chartData(resources, app.MaxResourcesHistory)
 	}
 }
