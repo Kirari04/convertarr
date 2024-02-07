@@ -172,6 +172,10 @@ func encodeFile(file string) {
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
+		h265Pools := "*"
+		if app.Setting.EncodingThreads > 0 {
+			h265Pools = fmt.Sprint(app.Setting.EncodingThreads)
+		}
 		ffmpegCommand =
 			"ffmpeg " +
 				// "-analyzeduration 30000000 -probesize 8000000000 " +
@@ -187,6 +191,7 @@ func encodeFile(file string) {
 				// "-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
+				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) + // setting libx265 params
 				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
 				fmt.Sprintf(`"%s" `, tmpOutput) +
 				fmt.Sprintf("-progress unix://%s -y", tempSock(
