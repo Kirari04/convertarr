@@ -158,8 +158,8 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 
 func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_chartData_94ab`,
-		Function: `function __templ_chartData_94ab(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
+		Name: `__templ_chartData_42db`,
+		Function: `function __templ_chartData_42db(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
 		if(!data){
 			return [0]
 		}
@@ -214,6 +214,7 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
                 },
             },
             max: 100,
+			min: 0,
         },
         tooltip: {
             y: {
@@ -287,7 +288,7 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
 		return bytes.toFixed(dp) + ' ' + units[u];
 	}
 }`,
-		Call:       templ.SafeScript(`__templ_chartData_94ab`, resources, maxResourcesHistory),
-		CallInline: templ.SafeScriptInline(`__templ_chartData_94ab`, resources, maxResourcesHistory),
+		Call:       templ.SafeScript(`__templ_chartData_42db`, resources, maxResourcesHistory),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_42db`, resources, maxResourcesHistory),
 	}
 }
