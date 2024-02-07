@@ -5,6 +5,7 @@ import (
 	"encoder/layouts"
 	"encoder/t"
 	"fmt"
+	"time"
 )
 
 templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, savedStorage string, encodedFiles string) {
@@ -45,11 +46,11 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool,
 				</nav>
 				if longStats {
 					<p>
-						Showing Long Stats (avg cpu ussage over long period of time)
+						Showing Long Stats (avg cpu ussage over the last { fmt.Sprintf("%s", app.ResourcesInterval * time.Duration(app.MaxResourcesHistory)) })
 					</p>
 				} else {
 					<p>
-						Showing Short Stats (more accurate cpu ussage over short period of time)
+						Showing Short Stats (more accurate cpu ussage over the last { fmt.Sprintf("%s", app.ResourcesInterval * time.Duration(48)) })
 					</p>
 				}
 				<div id="chart"></div>

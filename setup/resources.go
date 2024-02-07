@@ -9,17 +9,15 @@ import (
 	"github.com/shirou/gopsutil/v3/net"
 )
 
-var resourcesInterval = time.Second * 3
-var resourcesDeleteInterval = time.Minute * 1
 var netSent uint64 = 0
 var netRecv uint64 = 0
 
 func Resources() {
 	go func() {
 		// prevent resource arrays being to big
-		deleteFromArrayHistory := (resourcesDeleteInterval.Seconds() / resourcesInterval.Seconds()) + 1
+		deleteFromArrayHistory := (app.ResourcesDeleteInterval.Seconds() / app.ResourcesInterval.Seconds()) + 1
 		for {
-			time.Sleep(resourcesDeleteInterval)
+			time.Sleep(app.ResourcesDeleteInterval)
 
 			if len(app.ResourcesHistory.Cpu) > app.MaxResourcesHistory {
 				app.ResourcesHistory.Cpu = app.ResourcesHistory.Cpu[int(deleteFromArrayHistory):]
@@ -65,10 +63,10 @@ func Resources() {
 
 			app.ResourcesHistory.Cpu = append(app.ResourcesHistory.Cpu, printCpu)
 			app.ResourcesHistory.Mem = append(app.ResourcesHistory.Mem, printRam)
-			app.ResourcesHistory.NetOut = append(app.ResourcesHistory.NetOut, printNetSent/uint64(resourcesInterval.Seconds()))
-			app.ResourcesHistory.NetIn = append(app.ResourcesHistory.NetIn, printNetRecv/uint64(resourcesInterval.Seconds()))
+			app.ResourcesHistory.NetOut = append(app.ResourcesHistory.NetOut, printNetSent/uint64(app.ResourcesInterval.Seconds()))
+			app.ResourcesHistory.NetIn = append(app.ResourcesHistory.NetIn, printNetRecv/uint64(app.ResourcesInterval.Seconds()))
 
-			time.Sleep(resourcesInterval)
+			time.Sleep(app.ResourcesInterval)
 		}
 	}()
 }
