@@ -18,7 +18,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest -f /docker/software/Dockerfile .
+        docker build -t Arlinddev/convertarr:latest -f ./docker/software/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push Arlinddev/convertarr:latest
 
@@ -27,7 +27,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest-nvidia -f /docker/nvidia/Dockerfile .
+        docker build -t Arlinddev/convertarr:latest-nvidia -f ./docker/nvidia/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push Arlinddev/convertarr:latest-nvidia
 
@@ -36,6 +36,6 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest-vaapi -f /docker/vaapi/Dockerfile .
+        docker build -t Arlinddev/convertarr:latest-vaapi -f ./docker/vaapi/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push Arlinddev/convertarr:latest-vaapi
