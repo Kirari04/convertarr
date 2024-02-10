@@ -1,0 +1,41 @@
+name: Docker Build & Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build and push Image 1
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker build -t Arlinddev/convertarr:latest -f /docker/software/Dockerfile .
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        docker push Arlinddev/convertarr:latest
+
+    - name: Build and push Image 2
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker build -t Arlinddev/convertarr:latest-nvidia -f /docker/nvidia/Dockerfile .
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        docker push Arlinddev/convertarr:latest-nvidia
+
+    - name: Build and push Image 3
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker build -t Arlinddev/convertarr:latest-vaapi -f /docker/vaapi/Dockerfile .
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        docker push Arlinddev/convertarr:latest-vaapi
