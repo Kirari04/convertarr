@@ -4,17 +4,18 @@
 
 ## Install using Docker
 
+### Software encoding
+
 ```bash
 docker run -d \
-  --name=convertarr \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Etc/UTC \
-  -p 8080:8080 \
-  -v /path/to/data:/app/database \
-  -v /path/to/videofiles:/videofiles `#optional` \
-  --restart unless-stopped \
-  kirari04/convertarr:latest
+    --name convertarr \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ=Etc/UTC \
+    -v /path/to/data:/app/database \
+    -v /path/to/videofiles:/videofiles `#optional` \
+    -p 8080:8080 \
+    kirari04/convertarr:latest
 ```
 
 or using docker-compose
@@ -34,6 +35,87 @@ services:
       - /path/to/videofiles:/videofiles #optional
     ports:
       - 8080:8080
+    restart: unless-stopped
+```
+
+### Hardware encoding
+
+#### Nvidia
+
+```bash
+docker run -d \
+    --name convertarr \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ=Etc/UTC \
+    -v /path/to/data:/app/database \
+    -v /path/to/videofiles:/videofiles `#optional` \
+    -p 8080:8080 \
+    --gpus all \
+    kirari04/convertarr-nvidia:latest
+```
+
+or using docker-compose
+
+```yaml
+---
+services:
+  convertarr:
+    image: kirari04/convertarr-nvidia:latest
+    container_name: convertarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/data:/app/database
+      - /path/to/videofiles:/videofiles #optional
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu,compute,video]
+    restart: unless-stopped
+```
+
+#### VAAPI
+
+```bash
+docker run -d \
+    --name convertarr \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ=Etc/UTC \
+    -v /path/to/data:/app/database \
+    -v /path/to/videofiles:/videofiles `#optional` \
+    -p 8080:8080 \
+    --device /dev/dri:/dev/dri \
+    kirari04/convertarr-vaapi:latest
+```
+
+or using docker-compose
+
+```yaml
+---
+services:
+  convertarr:
+    image: kirari04/convertarr-vaapi:latest
+    container_name: convertarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/data:/app/database
+      - /path/to/videofiles:/videofiles #optional
+    ports:
+      - 8080:8080
+    devices:
+      - /dev/dri:/dev/dri
     restart: unless-stopped
 ```
 
