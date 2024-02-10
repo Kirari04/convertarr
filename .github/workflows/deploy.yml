@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Build and push Image 1
+    - name: Build and push software encode image
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -22,7 +22,7 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push $DOCKER_USERNAME/convertarr:latest
 
-    - name: Build and push Image 2
+    - name: Build and push nvidia hardware encode image
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -31,7 +31,7 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push $DOCKER_USERNAME/convertarr:latest-nvidia
 
-    - name: Build and push Image 3
+    - name: Build and push vaapi hardware encode image
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
