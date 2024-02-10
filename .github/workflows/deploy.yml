@@ -18,24 +18,24 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest -f ./docker/software/Dockerfile .
+        docker build -t arlinddev/convertarr:latest -f ./docker/software/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        docker push Arlinddev/convertarr:latest
+        docker push arlinddev/convertarr:latest
 
     - name: Build and push Image 2
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest-nvidia -f ./docker/nvidia/Dockerfile .
+        docker build -t arlinddev/convertarr:latest-nvidia -f ./docker/nvidia/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        docker push Arlinddev/convertarr:latest-nvidia
+        docker push arlinddev/convertarr:latest-nvidia
 
     - name: Build and push Image 3
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        docker build -t Arlinddev/convertarr:latest-vaapi -f ./docker/vaapi/Dockerfile .
+        docker build -t arlinddev/convertarr:latest-vaapi -f ./docker/vaapi/Dockerfile .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        docker push Arlinddev/convertarr:latest-vaapi
+        docker push arlinddev/convertarr:latest-vaapi
