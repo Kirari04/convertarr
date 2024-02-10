@@ -52,6 +52,16 @@ func GetSetting(c echo.Context) error {
 	} else {
 		v.EnableHevcEncoding = nil
 	}
+	if app.Setting.EnableNvidiaGpuEncoding {
+		v.EnableNvidiaGpuEncoding = &on
+	} else {
+		v.EnableNvidiaGpuEncoding = nil
+	}
+	if app.Setting.EnableAmdGpuEncoding {
+		v.EnableAmdGpuEncoding = &on
+	} else {
+		v.EnableAmdGpuEncoding = nil
+	}
 
 	if app.Setting.EncodingCrf <= 0 {
 		v.EncodingCrf = 25

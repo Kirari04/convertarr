@@ -216,7 +216,27 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"0\" max=\"999\"> Encoding Max Retry (0-999)</div></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" min=\"0\" max=\"999\"> Encoding Max Retry (0-999)</div></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableNvidiaGpuEncoding\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableNvidiaGpuEncoding) == "checked" || helper.PStrToStr(v.EnableNvidiaGpuEncoding) == "on" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Nvidia Gpu Encoding</label></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableAmdGpuEncoding\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableAmdGpuEncoding) == "checked" || helper.PStrToStr(v.EnableAmdGpuEncoding) == "on" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Amd Gpu Encoding</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -179,6 +179,26 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 					</div>
 				</div>
 				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableNvidiaGpuEncoding"
+							checked?={ helper.PStrToStr(v.EnableNvidiaGpuEncoding) == "checked" || helper.PStrToStr(v.EnableNvidiaGpuEncoding) == "on" }
+						/>
+						Enable Nvidia Gpu Encoding
+					</label>
+				</div>
+				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableAmdGpuEncoding"
+							checked?={ helper.PStrToStr(v.EnableAmdGpuEncoding) == "checked" || helper.PStrToStr(v.EnableAmdGpuEncoding) == "on" }
+						/>
+						Enable Amd Gpu Encoding
+					</label>
+				</div>
+				<div class="field">
 					<div class="control">
 						<button type="submit" class="button is-primary">Save</button>
 					</div>
