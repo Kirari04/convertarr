@@ -186,8 +186,8 @@ func encodeFile(file string) {
 				"-c:s copy " +
 				"-c:v libx265 " + // setting video codec libx265 | libaom-av1
 				"-map 0:v:0 " +
-				"-map 0:a " +
-				"-map 0:s " +
+				"-map 0:a? " +
+				"-map 0:s? " +
 				// "-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v main " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
@@ -208,8 +208,8 @@ func encodeFile(file string) {
 				"-c:s copy " +
 				"-c:v libx264 " + // setting video codec libx264 | libaom-av1
 				"-map 0:v:0 " +
-				"-map 0:a " +
-				"-map 0:s " +
+				"-map 0:a? " +
+				"-map 0:s? " +
 				"-pix_fmt yuv420p " + // YUV 4:2:0
 				"-profile:v high " + // force 8 bit
 				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
