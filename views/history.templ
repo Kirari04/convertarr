@@ -25,7 +25,7 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 						No files encodet yet
 					</div>
 				} else {
-					<div hx-get="/history/table" hx-trigger="every 5s">
+					<div hx-get="/history/table" hx-trigger="every 2s">
 						@components.HistoryTable(Ctx, histories)
 					</div>
 				}

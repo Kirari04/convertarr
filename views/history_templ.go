@@ -46,7 +46,7 @@ func History(Ctx t.TemplCtx, Title string, histories []m.History) templ.Componen
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-get=\"/history/table\" hx-trigger=\"every 5s\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-get=\"/history/table\" hx-trigger=\"every 2s\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
