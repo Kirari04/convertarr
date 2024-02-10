@@ -1,0 +1,20 @@
+FROM golang:1.21 as builder
+
+WORKDIR /app
+COPY . .
+RUN go mod tidy
+RUN CGO_ENABLED=0 go build -o main.bin main.go
+
+FROM ghcr.io/jrottenberg/ffmpeg:5.1-vaapi
+
+WORKDIR /app
+VOLUME /app/database
+
+COPY --from=builder /app/main.bin /app/main.bin
+
+RUN chmod +x /app/main.bin
+
+EXPOSE 8080
+
+ENTRYPOINT ["./main.bin"]
+CMD ["serve"]

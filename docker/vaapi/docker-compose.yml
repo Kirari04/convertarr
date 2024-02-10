@@ -1,0 +1,17 @@
+---
+services:
+  convertarr:
+    image: kirari04/convertarr-vaapi:latest
+    container_name: convertarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/data:/app/database
+      - /path/to/videofiles:/videofiles #optional
+    ports:
+      - 8080:8080
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
