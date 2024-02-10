@@ -1,0 +1,22 @@
+---
+services:
+  convertarr:
+    image: kirari04/convertarr-nvidia:latest
+    container_name: convertarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/data:/app/database
+      - /path/to/videofiles:/videofiles #optional
+    ports:
+      - 8080:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu,compute,video]
+    restart: unless-stopped
