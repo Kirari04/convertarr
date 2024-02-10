@@ -1,0 +1,15 @@
+---
+services:
+  convertarr:
+    image: kirari04/convertarr:latest
+    container_name: convertarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /path/to/data:/app/database
+      - /path/to/videofiles:/videofiles #optional
+    ports:
+      - 8080:8080
+    restart: unless-stopped
