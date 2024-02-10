@@ -1,7 +1,7 @@
 ---
 services:
   convertarr:
-    image: kirari04/convertarr-vaapi:latest
+    image: kirari04/convertarr:latest-vaapi
     container_name: convertarr
     environment:
       - PUID=1000

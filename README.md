@@ -52,7 +52,7 @@ docker run -d \
     -v /path/to/videofiles:/videofiles `#optional` \
     -p 8080:8080 \
     --gpus all \
-    kirari04/convertarr-nvidia:latest
+    kirari04/convertarr:latest-nvidia
 ```
 
 or using docker-compose
@@ -61,7 +61,7 @@ or using docker-compose
 ---
 services:
   convertarr:
-    image: kirari04/convertarr-nvidia:latest
+    image: kirari04/convertarr:latest-nvidia
     container_name: convertarr
     environment:
       - PUID=1000
@@ -94,7 +94,7 @@ docker run -d \
     -v /path/to/videofiles:/videofiles `#optional` \
     -p 8080:8080 \
     --device /dev/dri:/dev/dri \
-    kirari04/convertarr-vaapi:latest
+    kirari04/convertarr:latest-vaapi
 ```
 
 or using docker-compose
@@ -103,7 +103,7 @@ or using docker-compose
 ---
 services:
   convertarr:
-    image: kirari04/convertarr-vaapi:latest
+    image: kirari04/convertarr:latest-vaapi
     container_name: convertarr
     environment:
       - PUID=1000
