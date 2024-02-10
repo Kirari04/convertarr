@@ -199,6 +199,16 @@ templ Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) {
 					</label>
 				</div>
 				<div class="field">
+					<label class="checkbox">
+						<input
+							type="checkbox"
+							name="EnableImageComparison"
+							checked?={ helper.PStrToStr(v.EnableImageComparison) == "checked" || helper.PStrToStr(v.EnableImageComparison) == "on" }
+						/>
+						Enable Image Comparison
+					</label>
+				</div>
+				<div class="field">
 					<div class="control">
 						<button type="submit" class="button is-primary">Save</button>
 					</div>

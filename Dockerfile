@@ -9,6 +9,7 @@ FROM alpine:3.14
 
 WORKDIR /app
 VOLUME /app/database
+VOLUME /app/imgs
 
 RUN apk add --no-cache ffmpeg bash coreutils
 

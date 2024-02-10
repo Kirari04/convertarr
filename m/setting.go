@@ -38,6 +38,7 @@ type SettingValue struct {
 	EnableHevcEncoding      bool
 	EnableNvidiaGpuEncoding bool
 	EnableAmdGpuEncoding    bool
+	EnableImageComparison   bool
 	EncodingThreads         int
 	EncodingCrf             int
 	EncodingResolution      int

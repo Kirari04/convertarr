@@ -8,18 +8,19 @@ import (
 )
 
 type History struct {
-	ID        uint `gorm:"primarykey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Hash      string
-	OldPath   string
-	NewPath   string
-	OldSize   uint64
-	NewSize   uint64
-	TimeTaken time.Duration
-	Progress  float64
-	Error     string `gorm:"size:10000"`
-	Status    string // encoding | failed | finished | copy
+	ID            uint `gorm:"primarykey"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Hash          string
+	OldPath       string
+	NewPath       string
+	OldSize       uint64
+	NewSize       uint64
+	TimeTaken     time.Duration
+	ComparisonImg string
+	Progress      float64
+	Error         string `gorm:"size:10000"`
+	Status        string // encoding | failed | finished | copy
 }
 
 func (j *History) Create(DB *gorm.DB, OldPath string) error {
@@ -42,6 +43,15 @@ func (j *History) SetNewPath(DB *gorm.DB, NewPath string) error {
 
 func (j *History) SetProgress(DB *gorm.DB, Progress float64) error {
 	j.Progress = Progress
+	if err := DB.Save(j).Error; err != nil {
+		log.Error("Failed to save history", err)
+		return err
+	}
+	return nil
+}
+
+func (j *History) SetComparisonImg(DB *gorm.DB, ComparisonImg string) error {
+	j.ComparisonImg = ComparisonImg
 	if err := DB.Save(j).Error; err != nil {
 		log.Error("Failed to save history", err)
 		return err

@@ -243,6 +243,51 @@ func encodeFile(file string) {
 		return
 	}
 
+	if app.Setting.EnableImageComparison {
+		imgOutputPath := fmt.Sprintf("./imgs/%s.jpg", uuid.NewString())
+		ffmpegImgCommand := `ffmpeg ` +
+			`-t 1 -s 1920x2160 -f rawvideo -pix_fmt rgb24 -r 25 ` +
+			`-i /dev/zero ` +
+			fmt.Sprintf(`-i "%s" `, file) +
+			fmt.Sprintf(`-i "%s" `, tmpOutput) +
+			`-filter_complex ` +
+			`"[0:v]scale=-2:2160[bg]; ` +
+			`[1:v]scale=-2:1080[img]; ` +
+			`[2:v]scale=-2:1080[img2]; ` +
+			`[img]crop=iw/8:ih/8,scale=8*iw:-2[imgz]; ` +
+			`[img2]crop=iw/8:ih/8,scale=8*iw:-2[img2z]; ` +
+			`[imgz]split=1[v1]; ` +
+			`[img2z]split=1[v2]; ` +
+			`[bg][v1]overlay=w*0:h*0,trim=start=5:end=6[f2]; ` +
+			`[f2][v2]overlay=w*0:h*1,trim=start=5:end=6[f3]; ` +
+			`[f3]setpts=PTS-STARTPTS,scale=-2:2160[fin]" ` +
+			`-map [fin] ` +
+			`-qscale:v 2 ` +
+			fmt.Sprintf(`-vframes 1 "%s" -y`, imgOutputPath)
+
+		// create comparison image
+		cmdImg := exec.Command(
+			"bash",
+			"-c",
+			ffmpegImgCommand)
+
+		var cmdImgOutb, cmdImgErrb bytes.Buffer
+		cmdImg.Stdout = &cmdImgOutb
+		cmdImg.Stderr = &cmdImgErrb
+
+		if err := cmdImg.Run(); err != nil {
+			log.Errorf("Error happend while creating comparison img: %v\n", err.Error())
+			log.Error("out", outb.String())
+			log.Error("err", errb.String())
+			log.Error(ffmpegCommand)
+			return
+		}
+
+		if err := history.SetComparisonImg(app.DB, imgOutputPath); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+	}
+
 	if err := history.Copy(app.DB, output); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}

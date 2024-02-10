@@ -2,3 +2,4 @@ tmp/
 *.sqlite
 main.bin
 tmp.mkv
+imgs/

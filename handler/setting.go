@@ -62,6 +62,11 @@ func GetSetting(c echo.Context) error {
 	} else {
 		v.EnableAmdGpuEncoding = nil
 	}
+	if app.Setting.EnableImageComparison {
+		v.EnableImageComparison = &on
+	} else {
+		v.EnableImageComparison = nil
+	}
 
 	if app.Setting.EncodingCrf <= 0 {
 		v.EncodingCrf = 25
@@ -170,6 +175,12 @@ func PostSetting(c echo.Context) error {
 		settingTmp.EnableHevcEncoding = true
 	} else {
 		settingTmp.EnableHevcEncoding = false
+	}
+
+	if v.EnableImageComparison != nil && *v.EnableImageComparison == "on" {
+		settingTmp.EnableImageComparison = true
+	} else {
+		settingTmp.EnableImageComparison = false
 	}
 
 	if settingTmp.EnableEncoding {

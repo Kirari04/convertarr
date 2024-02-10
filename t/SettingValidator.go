@@ -16,4 +16,5 @@ type SettingValidator struct {
 	EncodingMaxRetry        int     `form:"EncodingMaxRetry" validate:"omitempty,number,gte=0,lte=999"`
 	EnableNvidiaGpuEncoding *string `form:"EnableNvidiaGpuEncoding" validate:"omitempty,oneof=on off"`
 	EnableAmdGpuEncoding    *string `form:"EnableAmdGpuEncoding" validate:"omitempty,oneof=on off"`
+	EnableImageComparison   *string `form:"EnableImageComparison" validate:"omitempty,oneof=on off"`
 }

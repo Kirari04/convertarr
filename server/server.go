@@ -28,6 +28,7 @@ func Serve() {
 	e.Use(mware.AuthEnabledRedirect)
 
 	// routes
+	e.Static("/imgs", "./imgs")
 	e.GET("/", handler.GetIndex)
 	e.GET("/setup", handler.GetSetup)
 	e.POST("/setup", handler.PostSetup)

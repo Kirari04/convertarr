@@ -236,7 +236,17 @@ func Setting(Ctx t.TemplCtx, Title string, v t.SettingValidator) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Amd Gpu Encoding</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Amd Gpu Encoding</label></div><div class=\"field\"><label class=\"checkbox\"><input type=\"checkbox\" name=\"EnableImageComparison\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if helper.PStrToStr(v.EnableImageComparison) == "checked" || helper.PStrToStr(v.EnableImageComparison) == "on" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> Enable Image Comparison</label></div><div class=\"field\"><div class=\"control\"><button type=\"submit\" class=\"button is-primary\">Save</button></div></div></form></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -16,6 +16,7 @@ templ HistoryTable(Ctx t.TemplCtx, histories []m.History) {
 				<th>Path</th>
 				<th>OldSize</th>
 				<th>NewSize</th>
+				<th>ImageComparison</th>
 				<th>TimeTaken</th>
 				<th>Status</th>
 			</tr>
@@ -34,6 +35,13 @@ templ HistoryTable(Ctx t.TemplCtx, histories []m.History) {
 					</td>
 					<td>
 						{ humanize.Bytes(history.NewSize) }
+					</td>
+					<td>
+						if history.ComparisonImg != "" {
+							<a href={ templ.URL(string([]byte(history.ComparisonImg)[1:])) } target="_blank">
+								Open
+							</a>
+						}
 					</td>
 					<td>
 						if history.TimeTaken.Seconds() == 0 && history.Status == "encoding" {
