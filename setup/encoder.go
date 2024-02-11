@@ -169,13 +169,17 @@ func encodeFile(file string) {
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
 		if app.Setting.EnableAmdGpuEncoding {
+			log.Info("Encoding Hevc using Vaapi interface")
 			ffmpegCommand = ffmpegcmd.H265Vaapi(file, tmpOutput, videoDuration, history)
 		} else if app.Setting.EnableNvidiaGpuEncoding {
+			log.Info("Encoding Hevc using Cuda interface")
 			ffmpegCommand = ffmpegcmd.H265Cuda(file, tmpOutput, videoDuration, history)
 		} else {
+			log.Info("Encoding Hevc using Software interface")
 			ffmpegCommand = ffmpegcmd.H265Cpu(file, tmpOutput, videoDuration, history)
 		}
 	} else {
+		log.Info("Encoding H264 using Software interface")
 		ffmpegCommand = ffmpegcmd.H264Cpu(file, tmpOutput, videoDuration, history)
 	}
 	startTime := time.Now()

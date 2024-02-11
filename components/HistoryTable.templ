@@ -46,13 +46,12 @@ templ HistoryTable(Ctx t.TemplCtx, histories []m.History) {
 					<td>
 						if history.TimeTaken.Seconds() == 0 && history.Status == "encoding" {
 							{ 
-												fmt.Sprintf(
-													"%s",
-													time.Duration(
-														time.Now().Unix() - history.CreatedAt.Unix(),
-													) * time.Second,
-												),
-											 }
+							fmt.Sprintf(
+								"%s",
+								time.Duration(
+									time.Now().Unix() - history.CreatedAt.Unix(),
+								) * time.Second,
+							) } / { fmt.Sprintf("%s", history.PredictTimeTaken) }
 						} else {
 							{ fmt.Sprintf("%s", history.TimeTaken) }
 						}

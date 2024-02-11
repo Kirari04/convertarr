@@ -4,13 +4,15 @@ import (
 	"encoder/app"
 	"encoder/m"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"path"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/labstack/gommon/log"
 )
 
 func TempSock(totalDuration float64, sockFileName string, encodingTask *m.History) string {
@@ -29,6 +31,7 @@ func TempSock(totalDuration float64, sockFileName string, encodingTask *m.Histor
 		buf := make([]byte, 16)
 		data := ""
 		progress := ""
+		var prevPercentage float64
 		for {
 			_, err := fd.Read(buf)
 			if err != nil {
@@ -56,6 +59,18 @@ func TempSock(totalDuration float64, sockFileName string, encodingTask *m.Histor
 				}
 				if floatProg != 0 {
 					encodingTask.SetProgress(app.DB, floatProg)
+					if prevPercentage < floatProg {
+						prevPercentage = floatProg
+						timeTaken := time.Duration(
+							time.Now().Unix()-encodingTask.CreatedAt.Unix(),
+						) * time.Second
+
+						predictSecondTake := (timeTaken.Seconds() / (floatProg * 100)) * 100
+						predictTimeTake := time.Duration(predictSecondTake) * time.Second
+
+						encodingTask.SetPredictTimeTaken(app.DB, predictTimeTake)
+						log.Infof("Running: %s predict: %s done: %.4f", timeTaken, predictTimeTake, floatProg)
+					}
 				}
 			}
 		}

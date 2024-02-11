@@ -57,22 +57,22 @@ func GetIndex(c echo.Context) error {
 	)
 
 	if !longStats && len(app.ResourcesHistory.Cpu) > 48 {
-		resourcesHistory.Cpu = app.ResourcesHistory.Cpu[:48]
+		resourcesHistory.Cpu = app.ResourcesHistory.Cpu[len(app.ResourcesHistory.Cpu)-48:]
 	} else {
 		resourcesHistory.Cpu = app.ResourcesHistory.Cpu
 	}
 	if !longStats && len(app.ResourcesHistory.Mem) > 48 {
-		resourcesHistory.Mem = app.ResourcesHistory.Mem[:48]
+		resourcesHistory.Mem = app.ResourcesHistory.Mem[len(app.ResourcesHistory.Mem)-48:]
 	} else {
 		resourcesHistory.Mem = app.ResourcesHistory.Mem
 	}
 	if !longStats && len(app.ResourcesHistory.NetOut) > 48 {
-		resourcesHistory.NetOut = app.ResourcesHistory.NetOut[:48]
+		resourcesHistory.NetOut = app.ResourcesHistory.NetOut[len(app.ResourcesHistory.NetOut)-48:]
 	} else {
 		resourcesHistory.NetOut = app.ResourcesHistory.NetOut
 	}
 	if !longStats && len(app.ResourcesHistory.NetIn) > 48 {
-		resourcesHistory.NetIn = app.ResourcesHistory.NetIn[:48]
+		resourcesHistory.NetIn = app.ResourcesHistory.NetIn[len(app.ResourcesHistory.NetIn)-48:]
 	} else {
 		resourcesHistory.NetIn = app.ResourcesHistory.NetIn
 	}
