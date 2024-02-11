@@ -3,17 +3,13 @@ package setup
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"encoder/app"
+	"encoder/ffmpegcmd"
 	"encoder/helper"
 	"encoder/m"
 	"fmt"
-	"net"
 	"os"
 	"os/exec"
-	"path"
-	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -172,54 +168,15 @@ func encodeFile(file string) {
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	var ffmpegCommand string
 	if app.Setting.EnableHevcEncoding {
-		h265Pools := "*"
-		if app.Setting.EncodingThreads > 0 {
-			h265Pools = fmt.Sprint(app.Setting.EncodingThreads)
+		if app.Setting.EnableAmdGpuEncoding {
+			ffmpegCommand = ffmpegcmd.H265Vaapi(file, tmpOutput, videoDuration, history)
+		} else if app.Setting.EnableNvidiaGpuEncoding {
+			ffmpegCommand = ffmpegcmd.H265Cuda(file, tmpOutput, videoDuration, history)
+		} else {
+			ffmpegCommand = ffmpegcmd.H265Cpu(file, tmpOutput, videoDuration, history)
 		}
-		ffmpegCommand =
-			"ffmpeg " +
-				// "-analyzeduration 30000000 -probesize 8000000000 " +
-				fmt.Sprintf(`-i "%s" `, file) + // input file
-				// "-max_muxing_queue_size 9999 " +
-				fmt.Sprintf("-threads %d ", app.Setting.EncodingThreads) +
-				"-c:a copy " +
-				"-c:s copy " +
-				"-c:v libx265 " + // setting video codec libx265 | libaom-av1
-				"-map 0:v:0 " +
-				"-map 0:a? " +
-				"-map 0:s? " +
-				// "-pix_fmt yuv420p " + // YUV 4:2:0
-				"-profile:v main " + // force 8 bit
-				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
-				fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) + // setting libx265 params
-				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
-				fmt.Sprintf(`"%s" `, tmpOutput) +
-				fmt.Sprintf("-progress unix://%s -y", tempSock(
-					videoDuration,
-					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
-					history,
-				)) // progress tracking
 	} else {
-		ffmpegCommand =
-			"ffmpeg " +
-				fmt.Sprintf(`-i "%s" `, file) + // input file
-				fmt.Sprintf("-threads %d ", app.Setting.EncodingThreads) +
-				"-c:a copy " +
-				"-c:s copy " +
-				"-c:v libx264 " + // setting video codec libx264 | libaom-av1
-				"-map 0:v:0 " +
-				"-map 0:a? " +
-				"-map 0:s? " +
-				"-pix_fmt yuv420p " + // YUV 4:2:0
-				"-profile:v high " + // force 8 bit
-				fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
-				fmt.Sprintf("-filter:v scale=%d:-2 ", app.Setting.EncodingResolution) + // setting resolution
-				fmt.Sprintf(`"%s" `, tmpOutput) +
-				fmt.Sprintf("-progress unix://%s -y", tempSock(
-					videoDuration,
-					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
-					history,
-				)) // progress tracking
+		ffmpegCommand = ffmpegcmd.H264Cpu(file, tmpOutput, videoDuration, history)
 	}
 	startTime := time.Now()
 	cmd := exec.Command(
@@ -324,55 +281,4 @@ func encodeFile(file string) {
 	if err := history.Finished(app.DB, uint64(newSize), time.Duration(endTime.Unix()-startTime.Unix())*time.Second); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
-}
-
-func tempSock(totalDuration float64, sockFileName string, encodingTask *m.History) string {
-	sockFilePath := path.Join(os.TempDir(), sockFileName)
-	l, err := net.Listen("unix", sockFilePath)
-	if err != nil {
-		panic(err)
-	}
-
-	go func() {
-		re := regexp.MustCompile(`out_time_ms=(\d+)`)
-		fd, err := l.Accept()
-		if err != nil {
-			log.Fatal("accept error:", err)
-		}
-		buf := make([]byte, 16)
-		data := ""
-		progress := ""
-		for {
-			_, err := fd.Read(buf)
-			if err != nil {
-				return
-			}
-			data += string(buf)
-			a := re.FindAllStringSubmatch(data, -1)
-			cp := ""
-			if len(a) > 0 && len(a[len(a)-1]) > 0 {
-				c, _ := strconv.Atoi(a[len(a)-1][len(a[len(a)-1])-1])
-				cp = fmt.Sprintf("%.2f", float64(c)/totalDuration/1000000)
-			}
-			if strings.Contains(data, "progress=end") {
-				cp = "1.0"
-			}
-			if cp == "" {
-				cp = ".0"
-			}
-			if cp != progress {
-				progress = cp
-				// fmt.Println("progress: ", progress)
-				floatProg, err := strconv.ParseFloat(progress, 64)
-				if err != nil {
-					fmt.Println("could not save progress in database")
-				}
-				if floatProg != 0 {
-					encodingTask.SetProgress(app.DB, floatProg)
-				}
-			}
-		}
-	}()
-
-	return sockFilePath
 }

@@ -5,7 +5,7 @@ COPY . .
 RUN go mod tidy
 RUN CGO_ENABLED=0 go build -o main.bin main.go
 
-FROM alpine:3.14
+FROM alpine:latest
 
 WORKDIR /app
 VOLUME /app/database

@@ -183,6 +183,40 @@ func PostSetting(c echo.Context) error {
 		settingTmp.EnableImageComparison = false
 	}
 
+	if v.EnableAmdGpuEncoding != nil && *v.EnableAmdGpuEncoding == "on" {
+		settingTmp.EnableAmdGpuEncoding = true
+	} else {
+		settingTmp.EnableAmdGpuEncoding = false
+	}
+
+	if v.EnableNvidiaGpuEncoding != nil && *v.EnableNvidiaGpuEncoding == "on" {
+		settingTmp.EnableNvidiaGpuEncoding = true
+	} else {
+		settingTmp.EnableNvidiaGpuEncoding = false
+	}
+
+	if settingTmp.EnableAmdGpuEncoding && settingTmp.EnableNvidiaGpuEncoding {
+		return helper.Render(c,
+			http.StatusBadRequest,
+			views.Setting(
+				helper.TCtxWError(c, errors.New("you can't use amd gpu and nvidia gpu encoding at the same time")),
+				fmt.Sprintf("%s - Setting", app.Name),
+				v,
+			),
+		)
+	}
+
+	if !settingTmp.EnableHevcEncoding && (settingTmp.EnableAmdGpuEncoding || settingTmp.EnableNvidiaGpuEncoding) {
+		return helper.Render(c,
+			http.StatusBadRequest,
+			views.Setting(
+				helper.TCtxWError(c, errors.New("hardware encoding can only be done on Hevc Encoding enabled")),
+				fmt.Sprintf("%s - Setting", app.Name),
+				v,
+			),
+		)
+	}
+
 	if settingTmp.EnableEncoding {
 		settingTmp.EncodingCrf = v.EncodingCrf
 		if v.EncodingResolution%2 != 0 {
