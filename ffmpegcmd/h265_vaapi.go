@@ -23,7 +23,7 @@ func H265Vaapi(file string, tmpOutput string, videoDuration float64, history *m.
 		"-map 0:a? " +
 		"-map 0:s? " +
 		"-rc_mode CQP " +
-		"-pix_fmt vaapi_vld " +
+		"-pix_fmt vaapi " +
 		"-profile:v main " +
 		fmt.Sprintf("-global_quality %d ", app.Setting.EncodingCrf) + // setting quality
 		fmt.Sprintf(`"%s" `, tmpOutput) +
