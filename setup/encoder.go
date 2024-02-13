@@ -213,8 +213,8 @@ func encodeFile(file string) {
 			fmt.Sprintf(`-i "%s" `, tmpOutput) +
 			`-filter_complex ` +
 			`"[0:v]scale=-2:2160[bg]; ` +
-			`[1:v]scale=-2:1080[img]; ` +
-			`[2:v]scale=-2:1080[img2]; ` +
+			`[1:v:0]scale=-2:1080[img]; ` +
+			`[2:v:0]scale=-2:1080[img2]; ` +
 			`[img]crop=iw/8:ih/8,scale=8*iw:-2[imgz]; ` +
 			`[img2]crop=iw/8:ih/8,scale=8*iw:-2[img2z]; ` +
 			`[imgz]split=1[v1]; ` +
@@ -224,7 +224,7 @@ func encodeFile(file string) {
 			`[f3]setpts=PTS-STARTPTS,scale=-2:2160[fin]" ` +
 			`-map [fin] ` +
 			`-qscale:v 2 ` +
-			fmt.Sprintf(`-vframes 1 "%s" -y`, imgOutputPath)
+			fmt.Sprintf(`-frames:v 1 "%s" -y`, imgOutputPath)
 
 		// create comparison image
 		cmdImg := exec.Command(
@@ -236,17 +236,19 @@ func encodeFile(file string) {
 		cmdImg.Stdout = &cmdImgOutb
 		cmdImg.Stderr = &cmdImgErrb
 
-		if err := cmdImg.Run(); err != nil {
+		err := cmdImg.Run()
+		if err != nil {
 			log.Errorf("Error happend while creating comparison img: %v\n", err.Error())
-			log.Error("out", outb.String())
-			log.Error("err", errb.String())
-			log.Error(ffmpegCommand)
-			return
+			log.Error("out: ", cmdImgOutb.String())
+			log.Error("err: ", cmdImgErrb.String())
+			log.Error(ffmpegImgCommand)
+		}
+		if err == nil {
+			if err := history.SetComparisonImg(app.DB, imgOutputPath); err != nil {
+				log.Errorf("Failed to update history %v\n", err)
+			}
 		}
 
-		if err := history.SetComparisonImg(app.DB, imgOutputPath); err != nil {
-			log.Errorf("Failed to update history %v\n", err)
-		}
 	}
 
 	if err := history.Copy(app.DB, output); err != nil {
