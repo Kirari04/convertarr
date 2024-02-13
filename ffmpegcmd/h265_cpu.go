@@ -26,7 +26,7 @@ func H265Cpu(file string, tmpOutput string, videoDuration float64, history *m.Hi
 		"-map 0:v:0 " +
 		"-map 0:a? " +
 		"-map 0:s? " +
-		// "-pix_fmt yuv420p " + // YUV 4:2:0
+		"-pix_fmt yuv420p " + // YUV 4:2:0
 		"-profile:v main " + // force 8 bit
 		fmt.Sprintf("-crf %d ", app.Setting.EncodingCrf) + // setting quality
 		fmt.Sprintf("-x265-params crf=%d:pools=%s -strict experimental ", app.Setting.EncodingCrf, h265Pools) + // setting libx265 params
