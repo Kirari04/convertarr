@@ -74,16 +74,19 @@ templ HistoryTable(Ctx t.TemplCtx, histories []m.History) {
 				if history.Status == "failed" {
 					<tr>
 						<td colspan="6">
-							<article class="message is-dark is-small">
-								<div class="message-body">
-									<p>
-										<strong>
-											Error Message
-										</strong>
-									</p>
-									{ templ.EscapeString(history.Error) }
-								</div>
-							</article>
+							<details>
+								<summary>Show Error Message</summary>
+								<article class="message is-dark is-small">
+									<div class="message-body">
+										<p>
+											<strong>
+												Error Message
+											</strong>
+										</p>
+										{ templ.EscapeString(history.Error) }
+									</div>
+								</article>
+							</details>
 						</td>
 					</tr>
 				}

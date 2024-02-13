@@ -265,20 +265,20 @@ func HistoryTable(Ctx t.TemplCtx, histories []m.History) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if history.Status == "failed" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td colspan=\"6\"><article class=\"message is-dark is-small\"><div class=\"message-body\"><p><strong>Error Message</strong></p>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td colspan=\"6\"><details><summary>Show Error Message</summary><article class=\"message is-dark is-small\"><div class=\"message-body\"><p><strong>Error Message</strong></p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(templ.EscapeString(history.Error))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/HistoryTable.templ`, Line: 83, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/HistoryTable.templ`, Line: 85, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></article></td></tr>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></article></details></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
