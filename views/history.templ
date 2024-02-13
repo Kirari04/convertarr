@@ -25,11 +25,27 @@ templ History(Ctx t.TemplCtx, Title string, histories []m.History) {
 						No files encodet yet
 					</div>
 				} else {
-					<div hx-get="/history/table" hx-trigger="every 2s">
+					<div id="refreshDiv" hx-get="/history/table" hx-trigger="every 2s[shouldRefresh()]">
 						@components.HistoryTable(Ctx, histories)
 					</div>
 				}
 			</div>
 		</article>
+		@script()
+	}
+}
+
+script script() {
+	const refreshDiv = document.getElementById("refreshDiv")
+	let isHovered = false;
+	refreshDiv.addEventListener('mouseover', function() {
+		isHovered = true;
+	});
+	refreshDiv.addEventListener('mouseout', function() {
+		isHovered = false;
+	});
+
+	window.shouldRefresh = function() {
+		return !isHovered;
 	}
 }

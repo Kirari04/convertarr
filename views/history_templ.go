@@ -46,7 +46,7 @@ func History(Ctx t.TemplCtx, Title string, histories []m.History) templ.Componen
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-get=\"/history/table\" hx-trigger=\"every 2s\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"refreshDiv\" hx-get=\"/history/table\" hx-trigger=\"every 2s[shouldRefresh()]\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -60,6 +60,10 @@ func History(Ctx t.TemplCtx, Title string, histories []m.History) templ.Componen
 				}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></article>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = script().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -77,4 +81,25 @@ func History(Ctx t.TemplCtx, Title string, histories []m.History) templ.Componen
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func script() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_script_3c6c`,
+		Function: `function __templ_script_3c6c(){const refreshDiv = document.getElementById("refreshDiv")
+	let isHovered = false;
+	refreshDiv.addEventListener('mouseover', function() {
+		isHovered = true;
+	});
+	refreshDiv.addEventListener('mouseout', function() {
+		isHovered = false;
+	});
+
+	window.shouldRefresh = function() {
+		return !isHovered;
+	}
+}`,
+		Call:       templ.SafeScript(`__templ_script_3c6c`),
+		CallInline: templ.SafeScriptInline(`__templ_script_3c6c`),
+	}
 }
