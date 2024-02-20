@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/patrickmn/go-cache"
 	"gorm.io/gorm"
 )
 
@@ -25,3 +26,4 @@ var ResourcesDeleteInterval = time.Minute * 1
 var JwtSecret string = "secret"
 var FilesToEncode []string
 var CurrentFileToEncode string
+var Cache = cache.New(5*time.Minute, 10*time.Minute)

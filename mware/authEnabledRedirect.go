@@ -1,6 +1,7 @@
 package mware
 
 import (
+	"crypto/sha256"
 	"encoder/app"
 	"encoding/base64"
 	"fmt"
@@ -26,6 +27,13 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 			if *app.Setting.AuthenticationType == "form" {
 				// if session is correct skip all
 				if jwtToken, err := c.Cookie("session"); err == nil {
+					sum256 := fmt.Sprintf("auth-form-%x", sha256.Sum256([]byte(jwtToken.Value)))
+					_, found := app.Cache.Get(sum256)
+					if found {
+						c.Set("IsAuth", true)
+						return next(c)
+					}
+
 					token, err := jwt.Parse(jwtToken.Value, func(token *jwt.Token) (interface{}, error) {
 						// Don't forget to validate the alg is what you expect:
 						if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -56,7 +64,7 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 					}
 
 					c.Set("IsAuth", true)
-
+					app.Cache.Set(sum256, true, time.Until(jwtToken.Expires))
 					// session is valid
 					return next(c)
 				}
@@ -70,6 +78,13 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 				if basicRawCredentials == "" {
 					c.Response().Header().Add("WWW-Authenticate", `Basic realm="Restricted Access"`)
 					return c.String(http.StatusUnauthorized, "Unauthorized")
+				}
+
+				sum256 := fmt.Sprintf("auth-form-%x", sha256.Sum256([]byte(basicRawCredentials)))
+				_, found := app.Cache.Get(sum256)
+				if found {
+					c.Set("IsAuth", true)
+					return next(c)
 				}
 
 				basicRawCredentials = strings.TrimPrefix(basicRawCredentials, "Basic ")
@@ -92,7 +107,7 @@ func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 				}
 
 				c.Set("IsAuth", true)
-
+				app.Cache.Set(sum256, true, time.Minute*1)
 				return next(c)
 			}
 			if c.Request().URL.Path != "/login" {
