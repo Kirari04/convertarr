@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoder/app"
-	"encoder/ffmpegcmd"
 	"encoder/helper"
 	"encoder/m"
 	"fmt"
@@ -146,7 +145,7 @@ func encodeFile(file string) {
 		return
 	}
 	dataStreams := data.StreamType(ffprobe.StreamAny)
-	videoDuration := data.Format.Duration().Seconds()
+	// videoDuration := data.Format.Duration().Seconds()
 	hasVideoStream := false
 
 	// loop over streams in file
@@ -166,39 +165,9 @@ func encodeFile(file string) {
 	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
-	var ffmpegCommand string
-	if app.Setting.EnableHevcEncoding {
-		if app.Setting.EnableAmdGpuEncoding {
-			log.Info("Encoding Hevc using Vaapi interface")
-			ffmpegCommand = ffmpegcmd.H265Vaapi(file, tmpOutput, videoDuration, history)
-		} else if app.Setting.EnableNvidiaGpuEncoding {
-			log.Info("Encoding Hevc using Cuda interface")
-			ffmpegCommand = ffmpegcmd.H265Cuda(file, tmpOutput, videoDuration, history)
-		} else {
-			log.Info("Encoding Hevc using Software interface")
-			ffmpegCommand = ffmpegcmd.H265Cpu(file, tmpOutput, videoDuration, history)
-		}
-	} else {
-		log.Info("Encoding H264 using Software interface")
-		ffmpegCommand = ffmpegcmd.H264Cpu(file, tmpOutput, videoDuration, history)
-	}
 	startTime := time.Now()
-	cmd := exec.Command(
-		"bash",
-		"-c",
-		ffmpegCommand)
-
-	var outb, errb bytes.Buffer
-	cmd.Stdout = &outb
-	cmd.Stderr = &errb
-
-	if err := cmd.Run(); err != nil {
-		log.Errorf("Error happend while encoding: %v\n", err.Error())
-		log.Error("out", outb.String())
-		log.Error("err", errb.String())
-		log.Error(ffmpegCommand)
-
-		if err := history.Failed(app.DB, fmt.Sprintf("%v | %v | %v", err.Error(), outb.String(), errb.String())); err != nil {
+	if err := helper.Encode(file, tmpOutput); err != nil {
+		if err := history.Failed(app.DB, err.Error()); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
 		}
 		return
@@ -248,7 +217,6 @@ func encodeFile(file string) {
 				log.Errorf("Failed to update history %v\n", err)
 			}
 		}
-
 	}
 
 	if err := history.Copy(app.DB, output); err != nil {
