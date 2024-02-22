@@ -25,5 +25,7 @@ var ResourcesDeleteInterval = time.Minute * 1
 
 var JwtSecret string = "secret"
 var FilesToEncode []string
+var LastScanNFiles int
+var LastFileScan *time.Time
 var CurrentFileToEncode string
 var Cache = cache.New(5*time.Minute, 10*time.Minute)

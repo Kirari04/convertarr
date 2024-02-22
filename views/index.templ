@@ -24,11 +24,26 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool,
 				}
 			</div>
 			<div class="message-body">
-				<nav class="level">
+				<nav class="level" style="align-items: start;">
 					<div class="level-item has-text-centered">
 						<div>
 							<p class="heading">Files in queue</p>
 							<p class="title">{ fmt.Sprint(len(app.FilesToEncode)) }</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">
+								Checked Files
+							</p>
+							<p class="title">{ fmt.Sprint(app.LastScanNFiles) }</p>
+							<p>
+								if app.LastFileScan != nil {
+									checked { fmt.Sprintf("%.0fs", time.Since(*app.LastFileScan).Seconds()) } ago
+								} else {
+									checked never
+								}
+							</p>
 						</div>
 					</div>
 					<div class="level-item has-text-centered">

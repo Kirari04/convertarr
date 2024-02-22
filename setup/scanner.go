@@ -35,12 +35,14 @@ func ScannFolders() {
 		return
 	}
 	var filesToEncode []string
+	var nFiles int
 	for _, rootFolder := range folders {
-		files, err := helper.OSReadDir(rootFolder.Path)
+		files, addNFiles, err := helper.OSReadDir(rootFolder.Path, 0)
 		if err != nil {
 			log.Warnf("failed to walk path %s: %v", rootFolder.Path, err)
 			continue
 		}
+		nFiles += addNFiles
 		filesToEncode = append(filesToEncode, files...)
 	}
 
@@ -52,8 +54,31 @@ func ScannFolders() {
 				exists = true
 			}
 		}
-		if !exists {
-			app.FilesToEncode = append(app.FilesToEncode, fileToEncode)
+		if exists {
+			continue
 		}
+		if app.Setting.EncodingMaxRetry > 0 {
+			hash, err := helper.HashFile(fileToEncode)
+			log.Debug("Failed to hash file to encode", err)
+			if err != nil {
+				continue
+			}
+			var tries int64
+			if err := app.DB.
+				Model(&m.History{}).
+				Where(&m.History{Hash: hash}).
+				Count(&tries).Error; err != nil {
+				log.Error("Failed to count encoding tries: ", err)
+				continue
+			}
+			if tries >= int64(app.Setting.EncodingMaxRetry) {
+				log.Debug("Reached max retries of file ", fileToEncode)
+				continue
+			}
+		}
+		app.FilesToEncode = append(app.FilesToEncode, fileToEncode)
 	}
+	now := time.Now()
+	app.LastFileScan = &now
+	app.LastScanNFiles = nFiles
 }
