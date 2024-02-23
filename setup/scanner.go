@@ -64,6 +64,7 @@ func ScannFolders() {
 		go func(fileToEncode string) {
 			defer func() {
 				<-ch
+				wg.Done()
 			}()
 			var exists bool
 			for _, existingFile := range app.FilesToEncode {
