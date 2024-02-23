@@ -4,6 +4,7 @@ import (
 	"encoder/app"
 	"encoder/helper"
 	"encoder/m"
+	"sync"
 	"time"
 
 	"github.com/labstack/gommon/log"
@@ -26,14 +27,14 @@ func Scanner() {
 }
 
 func ScannFolders() {
-	app.IsFileScanning = true
-	defer func() {
-		app.IsFileScanning = false
-	}()
 	if app.IsFileScanning {
 		log.Info("Already scanning folders")
 		return
 	}
+	app.IsFileScanning = true
+	defer func() {
+		app.IsFileScanning = false
+	}()
 	log.Info("Starting scanning of folders")
 	app.Setting.LastFolderScann = time.Now()
 	app.Setting.Save(app.DB)
@@ -55,37 +56,47 @@ func ScannFolders() {
 	}
 
 	log.Infof("Found %d unencoded files", len(filesToEncode))
+	var wg sync.WaitGroup
+	ch := make(chan int, 1000)
 	for _, fileToEncode := range filesToEncode {
-		var exists bool
-		for _, existingFile := range app.FilesToEncode {
-			if existingFile == fileToEncode {
-				exists = true
+		wg.Add(1)
+		ch <- 0
+		go func(fileToEncode string) {
+			defer func() {
+				<-ch
+			}()
+			var exists bool
+			for _, existingFile := range app.FilesToEncode {
+				if existingFile == fileToEncode {
+					exists = true
+				}
 			}
-		}
-		if exists {
-			continue
-		}
-		if app.Setting.EncodingMaxRetry > 0 {
-			hash, err := helper.HashFile(fileToEncode)
-			log.Debug("Failed to hash file to encode", err)
-			if err != nil {
-				continue
+			if exists {
+				return
 			}
-			var tries int64
-			if err := app.DB.
-				Model(&m.History{}).
-				Where(&m.History{Hash: hash}).
-				Count(&tries).Error; err != nil {
-				log.Error("Failed to count encoding tries: ", err)
-				continue
+			if app.Setting.EncodingMaxRetry > 0 {
+				hash, err := helper.HashFile(fileToEncode)
+				log.Debug("Failed to hash file to encode", err)
+				if err != nil {
+					return
+				}
+				var tries int64
+				if err := app.DB.
+					Model(&m.History{}).
+					Where(&m.History{Hash: hash}).
+					Count(&tries).Error; err != nil {
+					log.Error("Failed to count encoding tries: ", err)
+					return
+				}
+				if tries >= int64(app.Setting.EncodingMaxRetry) {
+					log.Debug("Reached max retries of file ", fileToEncode)
+					return
+				}
 			}
-			if tries >= int64(app.Setting.EncodingMaxRetry) {
-				log.Debug("Reached max retries of file ", fileToEncode)
-				continue
-			}
-		}
-		app.FilesToEncode = append(app.FilesToEncode, fileToEncode)
+			app.FilesToEncode = append(app.FilesToEncode, fileToEncode)
+		}(fileToEncode)
 	}
+	wg.Wait()
 	now := time.Now()
 	app.LastFileScan = &now
 	app.LastScanNFiles = nFiles
