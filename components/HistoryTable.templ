@@ -62,6 +62,8 @@ templ HistoryTable(Ctx t.TemplCtx, histories []m.History) {
 								<span class="tag is-link">{ fmt.Sprintf("%.0f%%", history.Progress * 100) } { history.Status }</span>
 							case "copy":
 								<span class="tag is-link">{ history.Status }</span>
+							case "probe":
+								<span class="tag is-link">{ history.Status }</span>
 							case "failed":
 								<span class="tag is-danger">{ history.Status }</span>
 							case "finished":
