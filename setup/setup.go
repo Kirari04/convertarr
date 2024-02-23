@@ -7,4 +7,5 @@ func Setup() {
 	Resources()
 	Scanner()
 	Encoder()
+	Copier()
 }

@@ -33,6 +33,9 @@ type SettingValue struct {
 	AutomaticScannsAtStartup bool
 	LastFolderScann          time.Time
 
+	// copier
+	PreCopyFileCount int
+
 	// encoding
 	EnableEncoding          bool
 	EnableHevcEncoding      bool

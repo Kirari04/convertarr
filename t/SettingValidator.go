@@ -8,6 +8,8 @@ type SettingValidator struct {
 	AutomaticScannsInterval  int     `form:"AutomaticScannsInterval" validate:"omitempty,number,gte=1"`
 	AutomaticScannsAtStartup *string `form:"AutomaticScannsAtStartup" validate:"omitempty,oneof=on off"`
 
+	PreCopyFileCount int `form:"PreCopyFileCount" validate:"omitempty,number,gte=0,lte=10"`
+
 	EnableEncoding          *string `form:"EnableEncoding" validate:"omitempty,oneof=on off"`
 	EncodingThreads         int     `form:"EncodingThreads" validate:"omitempty,number,gte=1"`
 	EncodingCrf             int     `form:"EncodingCrf" validate:"omitempty,number,gte=1,lte=50"`

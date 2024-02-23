@@ -82,6 +82,7 @@ func GetSetting(c echo.Context) error {
 
 	v.EncodingThreads = app.Setting.EncodingThreads
 	v.EncodingMaxRetry = app.Setting.EncodingMaxRetry
+	v.PreCopyFileCount = app.Setting.PreCopyFileCount
 
 	return helper.Render(c,
 		http.StatusOK,
@@ -242,6 +243,7 @@ func PostSetting(c echo.Context) error {
 		}
 		settingTmp.EncodingThreads = v.EncodingThreads
 		settingTmp.EncodingMaxRetry = v.EncodingMaxRetry
+		settingTmp.PreCopyFileCount = v.PreCopyFileCount
 	}
 
 	var setting m.Setting

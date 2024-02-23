@@ -25,7 +25,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 	ctx, cancelFn := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancelFn()
 	tmpDir := os.TempDir()
-	tmpMetadataFile := fmt.Sprintf("%s/tmp.mkv", tmpDir)
+	tmpMetadataFile := fmt.Sprintf("%s/tmpmetadata.mkv", tmpDir)
 	defer os.Remove(tmpMetadataFile)
 	data, err := ffprobe.ProbeURL(ctx, inputFile)
 	if err != nil {
@@ -247,7 +247,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 	log.Infof("Time Taken => Encode V: %s", time.Since(timeStart))
 	timeStart = time.Now()
 
-	// combine chuncks
+	// combine chuncks with audios and subtitles
 	m3u8Path := fmt.Sprintf("%s/output.m3u8", tmpDir)
 	defer os.Remove(m3u8Path)
 
@@ -255,7 +255,8 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 		return fmt.Errorf("failed to create master.m3u8: %v", err)
 	}
 
-	ffmpegCmd := fmt.Sprintf(`ffmpeg -i "%s" \
+	ffmpegCmd := fmt.Sprintf(`ffmpeg \
+	-i "%s" \
 	-i "%s" \
 	-map 0:v:0 \
 	-map 1:a? \
@@ -263,7 +264,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 	-c copy \
 	"%s" -y`, m3u8Path, tmpMetadataFile, outputFile)
 
-	// create comparison image
 	cmd := exec.Command(
 		"bash",
 		"-c",

@@ -45,7 +45,6 @@ func Encoder() {
 			}
 			if len(app.FilesToEncode) > 0 {
 				fileToEncode := app.FilesToEncode[0]
-				log.Infof("Starting encode on file: %s", fileToEncode)
 				encodeFile(fileToEncode)
 				app.FilesToEncode = app.FilesToEncode[1:]
 			}
@@ -72,23 +71,47 @@ func encodeFile(file string) {
 		return
 	}
 
-	log.Infof("Encoding file %s\n", file)
 	output := strings.TrimSuffix(file, ".mkv")
 	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
-	tmpOutput := "tmp.mkv"
-	tmpInput := "tmpin.mkv"
+	tmpDir := os.TempDir()
+	tmpOutput := fmt.Sprintf("%s/tmp.mkv", tmpDir)
+	tmpInput := fmt.Sprintf("%s/tmpin.mkv", tmpDir)
 
 	defer os.Remove(tmpOutput)
 	defer os.Remove(tmpInput)
 
-	// copy file to locale path
-	if err := helper.Move(file, tmpInput); err != nil {
-		if err := history.Failed(app.DB, fmt.Sprintf("Failed to copy encoded file to input path: %v", err)); err != nil {
-			log.Errorf("Failed to update history %v\n", err)
+	if app.Setting.PreCopyFileCount > 0 {
+		log.Infof("Waiting on copier for file %s", file)
+		// tell copier what file is asked
+		app.AwaitForFileCopy = file
+		// wait for copier to respons with the tmp file
+		setTmpInput, ok := <-app.AwaitForFileCopyChan
+		if !ok {
+			if err := history.Failed(app.DB, "Failed to AwaitForFileCopyChan"); err != nil {
+				log.Errorf("Failed to update history %v\n", err)
+			}
+			return
 		}
-		return
+		if err := helper.Move(setTmpInput, tmpInput); err != nil {
+			os.Remove(setTmpInput)
+			if err := history.Failed(app.DB, "Failed to move tmp file from copier"); err != nil {
+				log.Errorf("Failed to update history %v\n", err)
+			}
+			return
+		}
+		log.Infof("Received file from copier %s", file)
+	} else {
+		log.Infof("Copy file for Encoding to local folder %s\n", file)
+		// copy file to locale path
+		if err := helper.Copy(file, tmpInput); err != nil {
+			if err := history.Failed(app.DB, fmt.Sprintf("Failed to copy encoded file to input path: %v", err)); err != nil {
+				log.Errorf("Failed to update history %v\n", err)
+			}
+			return
+		}
 	}
 
+	log.Infof("Encoding file %s\n", file)
 	fi, err := os.Stat(tmpInput)
 	if err != nil {
 		log.Errorf("Failed to read filesize %v\n", err)
@@ -163,6 +186,7 @@ func encodeFile(file string) {
 		return
 	}
 
+	// generate image comparison
 	if app.Setting.EnableImageComparison {
 		imgOutputPath := fmt.Sprintf("./imgs/%s.jpg", uuid.NewString())
 		ffmpegImgCommand := `ffmpeg ` +
