@@ -68,17 +68,19 @@ func Copier() {
 
 						log.Infof("Starting copier on file: %s", fileToEncode)
 						tmpFilePath := fmt.Sprintf("%s/%s.mkv", tmpPath, uuid.NewString())
-						// add file to array so we can find it when the encoder requires it
+						// copy file to tmp path first
+						if err := helper.Copy(fileToEncode, tmpFilePath); err != nil {
+							os.Remove(tmpFilePath)
+							log.Errorf("Copier Failed to copy file to tmp folder: %v", err)
+							preloadedFiles = removePreloadedFile(fileToEncode, preloadedFiles)
+							continue
+						}
+						// add file to array (when its ready / finished copy) so we can find it when the encoder requires it
 						preloadedFile := PreloadedFile{
 							File:    fileToEncode,
 							TmpPath: tmpFilePath,
 						}
 						preloadedFiles = append(preloadedFiles, preloadedFile)
-						if err := helper.Copy(fileToEncode, tmpFilePath); err != nil {
-							log.Errorf("Copier Failed to copy file to tmp folder: %v", err)
-							preloadedFiles = removePreloadedFile(fileToEncode, preloadedFiles)
-							continue
-						}
 						log.Infof("Finished copier on file: %s", fileToEncode)
 					}
 				}
