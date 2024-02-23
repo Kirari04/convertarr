@@ -106,6 +106,12 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 					return templ_7745c5c3_Err
 				}
 			}
+			if app.IsFileScanning {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("(scanning now...)")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Saved storage</p><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -113,7 +119,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(savedStorage)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 51, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 54, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +132,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(encodedFiles)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 57, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 60, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -144,7 +150,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s", app.ResourcesInterval*time.Duration(app.MaxResourcesHistory)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 63, Col: 138}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 66, Col: 138}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -162,7 +168,7 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s", app.ResourcesInterval*time.Duration(48)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 67, Col: 128}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 70, Col: 128}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
