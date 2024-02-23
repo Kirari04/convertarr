@@ -26,6 +26,14 @@ func Scanner() {
 }
 
 func ScannFolders() {
+	app.IsFileScanning = true
+	defer func() {
+		app.IsFileScanning = false
+	}()
+	if app.IsFileScanning {
+		log.Info("Already scanning folders")
+		return
+	}
 	log.Info("Starting scanning of folders")
 	app.Setting.LastFolderScann = time.Now()
 	app.Setting.Save(app.DB)

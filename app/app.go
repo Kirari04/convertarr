@@ -27,5 +27,6 @@ var JwtSecret string = "secret"
 var FilesToEncode []string
 var LastScanNFiles uint64
 var LastFileScan *time.Time
+var IsFileScanning bool
 var CurrentFileToEncode string
 var Cache = cache.New(5*time.Minute, 10*time.Minute)

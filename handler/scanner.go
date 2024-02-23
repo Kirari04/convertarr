@@ -8,6 +8,6 @@ import (
 )
 
 func PostScanner(c echo.Context) error {
-	setup.ScannFolders()
+	go setup.ScannFolders()
 	return c.Redirect(http.StatusFound, "/history")
 }

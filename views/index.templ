@@ -43,6 +43,9 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool,
 								} else {
 									checked never
 								}
+								if app.IsFileScanning {
+									(scanning now...)
+								}
 							</p>
 						</div>
 					</div>
