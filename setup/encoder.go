@@ -166,7 +166,7 @@ func encodeFile(file string) {
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	startTime := time.Now()
-	if err := helper.Encode(file, tmpOutput); err != nil {
+	if err := helper.Encode(file, tmpOutput, history); err != nil {
 		if err := history.Failed(app.DB, err.Error()); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
 		}

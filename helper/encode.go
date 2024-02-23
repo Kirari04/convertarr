@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoder/app"
+	"encoder/m"
 	"fmt"
 	"math"
 	"os"
@@ -16,7 +17,7 @@ import (
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
-func Encode(inputFile, outputFile string) error {
+func Encode(inputFile, outputFile string, history *m.History) error {
 	timeStart := time.Now()
 	timeStartTotal := time.Now()
 	// probe file so we can show encoding progress
@@ -74,6 +75,7 @@ func Encode(inputFile, outputFile string) error {
 	crf := app.Setting.EncodingCrf
 	var chunckLen float64 = 15
 	chuncks := int(math.Ceil(videoDuration / chunckLen))
+	finishedChuncks := 0
 	var wg sync.WaitGroup
 	wg.Add(chuncks)
 	var preSeekedChunck bool
@@ -196,6 +198,18 @@ func Encode(inputFile, outputFile string) error {
 			defer wg.Done()
 			defer func() {
 				<-threadChan
+				finishedChuncks++
+
+				// update progress
+				progress := (100) / float64(chuncks) * float64(finishedChuncks)
+				if err := history.SetProgress(app.DB, progress); err != nil {
+					log.Errorf("Failed to set progress: %v", err)
+				}
+				timeTaken := time.Since(history.CreatedAt).Seconds()
+				predictTime := timeTaken / progress * 100
+				if err := history.SetPredictTimeTaken(app.DB, time.Duration(predictTime)*time.Second); err != nil {
+					log.Errorf("Failed to set predictTime: %v", err)
+				}
 			}()
 			cmd := exec.Command(
 				"bash",
