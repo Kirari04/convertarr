@@ -64,6 +64,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 
 	videoDuration := data.Format.Duration().Seconds()
 	m3u8Str := "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0"
+
 	threadsPerEncode := 2
 	allowThreads := app.Setting.EncodingThreads
 	if allowThreads <= 0 {
@@ -71,15 +72,19 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 	}
 	threads := int(math.Floor(float64(allowThreads) / float64(threadsPerEncode)))
 	threadChan := make(chan int, threads)
+
 	size := app.Setting.EncodingResolution
 	crf := app.Setting.EncodingCrf
+
 	var chunckLen float64 = 15
 	chuncks := int(math.Ceil(videoDuration / chunckLen))
 	finishedChuncks := 0
-	var wg sync.WaitGroup
-	wg.Add(chuncks)
+
 	var preSeekedChunck bool
 	var encodingHasError error
+
+	var wg sync.WaitGroup
+	wg.Add(chuncks)
 	for i := 0; i < chuncks; i++ {
 		if preSeekedChunck {
 			log.Info("Preseeked chunck (skipping last)")
@@ -118,6 +123,8 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 		m3u8Str += fmt.Sprintf("\n#EXTINF:%.6f,\noutput%d.ts", to-from, i)
 		log.Infof("%s from: %.2f to: %.2f time: %s", tmpFile, from, to, time.Since(timeStart))
 		defer os.Remove(tmpFile)
+
+		// generate ffmpeg code
 		var ffmpegCmd string
 		if app.Setting.EnableHevcEncoding {
 			if app.Setting.EnableAmdGpuEncoding {
