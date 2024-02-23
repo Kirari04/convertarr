@@ -89,4 +89,5 @@ func ScannFolders() {
 	now := time.Now()
 	app.LastFileScan = &now
 	app.LastScanNFiles = nFiles
+	log.Infof("Finished Scanning %d files", nFiles)
 }
