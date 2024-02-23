@@ -36,7 +36,7 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool,
 							<p class="heading">
 								Checked Files
 							</p>
-							<p class="title">{ fmt.Sprint(app.LastScanNFiles) }</p>
+							<p class="title">{ fmt.Sprintf("%d", app.LastScanNFiles) }</p>
 							<p>
 								if app.LastFileScan != nil {
 									checked { fmt.Sprintf("%.0fs", time.Since(*app.LastFileScan).Seconds()) } ago
@@ -81,7 +81,7 @@ script chartData(resources t.Resources, maxResourcesHistory int) {
 		if(!data){
 			return [0]
 		}
-		const maxLen = 24;
+		const maxLen = 48;
 		const currentLen = data.length;
 		if(currentLen <= maxLen) {
 			return data;

@@ -55,24 +55,24 @@ func GetIndex(c echo.Context) error {
 	var (
 		resourcesHistory t.Resources
 	)
-
-	if !longStats && len(app.ResourcesHistory.Cpu) > 48 {
-		resourcesHistory.Cpu = app.ResourcesHistory.Cpu[len(app.ResourcesHistory.Cpu)-48:]
+	shortBreakpoint := 48
+	if !longStats && len(app.ResourcesHistory.Cpu) > shortBreakpoint {
+		resourcesHistory.Cpu = app.ResourcesHistory.Cpu[len(app.ResourcesHistory.Cpu)-shortBreakpoint:]
 	} else {
 		resourcesHistory.Cpu = app.ResourcesHistory.Cpu
 	}
-	if !longStats && len(app.ResourcesHistory.Mem) > 48 {
-		resourcesHistory.Mem = app.ResourcesHistory.Mem[len(app.ResourcesHistory.Mem)-48:]
+	if !longStats && len(app.ResourcesHistory.Mem) > shortBreakpoint {
+		resourcesHistory.Mem = app.ResourcesHistory.Mem[len(app.ResourcesHistory.Mem)-shortBreakpoint:]
 	} else {
 		resourcesHistory.Mem = app.ResourcesHistory.Mem
 	}
-	if !longStats && len(app.ResourcesHistory.NetOut) > 48 {
-		resourcesHistory.NetOut = app.ResourcesHistory.NetOut[len(app.ResourcesHistory.NetOut)-48:]
+	if !longStats && len(app.ResourcesHistory.NetOut) > shortBreakpoint {
+		resourcesHistory.NetOut = app.ResourcesHistory.NetOut[len(app.ResourcesHistory.NetOut)-shortBreakpoint:]
 	} else {
 		resourcesHistory.NetOut = app.ResourcesHistory.NetOut
 	}
-	if !longStats && len(app.ResourcesHistory.NetIn) > 48 {
-		resourcesHistory.NetIn = app.ResourcesHistory.NetIn[len(app.ResourcesHistory.NetIn)-48:]
+	if !longStats && len(app.ResourcesHistory.NetIn) > shortBreakpoint {
+		resourcesHistory.NetIn = app.ResourcesHistory.NetIn[len(app.ResourcesHistory.NetIn)-shortBreakpoint:]
 	} else {
 		resourcesHistory.NetIn = app.ResourcesHistory.NetIn
 	}

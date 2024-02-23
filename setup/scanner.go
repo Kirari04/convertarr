@@ -35,7 +35,7 @@ func ScannFolders() {
 		return
 	}
 	var filesToEncode []string
-	var nFiles int
+	var nFiles uint64
 	for _, rootFolder := range folders {
 		files, addNFiles, err := helper.OSReadDir(rootFolder.Path, 0)
 		if err != nil {

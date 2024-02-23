@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func OSReadDir(root string, initNFiles int) (files []string, nFiles int, err error) {
+func OSReadDir(root string, initNFiles uint64) (files []string, nFiles uint64, err error) {
 	nFiles = initNFiles
 	f, err := os.Open(root)
 	if err != nil {

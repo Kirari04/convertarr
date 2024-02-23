@@ -70,9 +70,9 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(app.LastScanNFiles))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", app.LastScanNFiles))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 38, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 38, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -199,12 +199,12 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 
 func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_chartData_42db`,
-		Function: `function __templ_chartData_42db(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
+		Name: `__templ_chartData_4090`,
+		Function: `function __templ_chartData_4090(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
 		if(!data){
 			return [0]
 		}
-		const maxLen = 24;
+		const maxLen = 48;
 		const currentLen = data.length;
 		if(currentLen <= maxLen) {
 			return data;
@@ -329,7 +329,7 @@ func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentSc
 		return bytes.toFixed(dp) + ' ' + units[u];
 	}
 }`,
-		Call:       templ.SafeScript(`__templ_chartData_42db`, resources, maxResourcesHistory),
-		CallInline: templ.SafeScriptInline(`__templ_chartData_42db`, resources, maxResourcesHistory),
+		Call:       templ.SafeScript(`__templ_chartData_4090`, resources, maxResourcesHistory),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_4090`, resources, maxResourcesHistory),
 	}
 }
