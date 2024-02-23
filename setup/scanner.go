@@ -76,15 +76,10 @@ func ScannFolders() {
 				return
 			}
 			if app.Setting.EncodingMaxRetry > 0 {
-				hash, err := helper.HashFile(fileToEncode)
-				log.Debug("Failed to hash file to encode", err)
-				if err != nil {
-					return
-				}
 				var tries int64
 				if err := app.DB.
 					Model(&m.History{}).
-					Where(&m.History{Hash: hash}).
+					Where(&m.History{OldPath: fileToEncode}).
 					Count(&tries).Error; err != nil {
 					log.Error("Failed to count encoding tries: ", err)
 					return
