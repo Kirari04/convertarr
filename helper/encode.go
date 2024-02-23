@@ -208,12 +208,12 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 				finishedChuncks++
 
 				// update progress
-				progress := (100) / float64(chuncks) * float64(finishedChuncks)
+				progress := ((1) / float64(chuncks)) * float64(finishedChuncks)
 				if err := history.SetProgress(app.DB, progress); err != nil {
 					log.Errorf("Failed to set progress: %v", err)
 				}
 				timeTaken := time.Since(history.CreatedAt).Seconds()
-				predictTime := timeTaken / progress * 100
+				predictTime := (timeTaken / (progress * 100)) * 100
 				if err := history.SetPredictTimeTaken(app.DB, time.Duration(predictTime)*time.Second); err != nil {
 					log.Errorf("Failed to set predictTime: %v", err)
 				}
