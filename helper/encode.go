@@ -132,7 +132,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 				ffmpegCmd = fmt.Sprintf(`ffmpeg \
 					-vaapi_device /dev/dri/renderD128 \
 					-ss %.6f -t %.6f -i "%s" \
-					-vf 'format=nv12,hwupload,scale_vaapi=-2:%d' \
+					-vf 'format=nv12,hwupload,scale_vaapi=%d:-2' \
 					-threads %d \
 					-c:v hevc_vaapi \
 					-map 0:v:0 \
@@ -176,7 +176,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 					-map 0:v:0 \
 					-pix_fmt yuv420p -profile:v main \
 					-x265-params crf=%d:pools=%d -strict experimental \
-					-filter:v scale=-2:%d \
+					-filter:v scale=%d:-2 \
 					"%s" -y`,
 					from,
 					to-from,
