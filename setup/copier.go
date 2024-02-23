@@ -3,6 +3,7 @@ package setup
 import (
 	"encoder/app"
 	"encoder/helper"
+	"encoder/t"
 	"fmt"
 	"os"
 	"time"
@@ -10,13 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 )
-
-type PreloadedFile struct {
-	File    string
-	TmpPath string
-}
-
-var preloadedFiles []PreloadedFile
 
 func Copier() {
 	go func() {
@@ -34,12 +28,12 @@ func Copier() {
 				time.Sleep(time.Second)
 				if app.AwaitForFileCopy != "" {
 					log.Infof("Requiested copier for file: %s", app.AwaitForFileCopy)
-					for _, preloadedFile := range preloadedFiles {
+					for _, preloadedFile := range app.PreloadedFiles {
 						if preloadedFile.File == app.AwaitForFileCopy {
 							app.AwaitForFileCopyChan <- preloadedFile.TmpPath
 							app.AwaitForFileCopy = ""
 							log.Infof("Copier responded with file: %s", preloadedFile.TmpPath)
-							preloadedFiles = removePreloadedFile(preloadedFile.File, preloadedFiles)
+							app.PreloadedFiles = removePreloadedFile(preloadedFile.File, app.PreloadedFiles)
 						}
 					}
 				}
@@ -52,7 +46,7 @@ func Copier() {
 			nthFileToEncode := 0
 			if app.Setting.EnableEncoding &&
 				app.Setting.PreCopyFileCount > 0 &&
-				len(preloadedFiles) < app.Setting.PreCopyFileCount {
+				len(app.PreloadedFiles) < app.Setting.PreCopyFileCount {
 				if len(app.FilesToEncode) > 0 {
 					for {
 						if nthFileToEncode >= len(app.FilesToEncode) {
@@ -61,7 +55,7 @@ func Copier() {
 						}
 						// get file that hasn't been preloaded yet
 						fileToEncode := app.FilesToEncode[nthFileToEncode]
-						if hasPreloadedFile(fileToEncode, preloadedFiles) {
+						if hasPreloadedFile(fileToEncode, app.PreloadedFiles) {
 							nthFileToEncode++
 							continue
 						}
@@ -72,15 +66,15 @@ func Copier() {
 						if err := helper.Copy(fileToEncode, tmpFilePath); err != nil {
 							os.Remove(tmpFilePath)
 							log.Errorf("Copier Failed to copy file to tmp folder: %v", err)
-							preloadedFiles = removePreloadedFile(fileToEncode, preloadedFiles)
+							app.PreloadedFiles = removePreloadedFile(fileToEncode, app.PreloadedFiles)
 							continue
 						}
 						// add file to array (when its ready / finished copy) so we can find it when the encoder requires it
-						preloadedFile := PreloadedFile{
+						preloadedFile := t.PreloadedFile{
 							File:    fileToEncode,
 							TmpPath: tmpFilePath,
 						}
-						preloadedFiles = append(preloadedFiles, preloadedFile)
+						app.PreloadedFiles = append(app.PreloadedFiles, preloadedFile)
 						log.Infof("Finished copier on file: %s", fileToEncode)
 					}
 				}
@@ -89,7 +83,7 @@ func Copier() {
 	}()
 }
 
-func removePreloadedFile(a string, list []PreloadedFile) []PreloadedFile {
+func removePreloadedFile(a string, list []t.PreloadedFile) []t.PreloadedFile {
 	var i = -1
 	for ii, b := range list {
 		if b.File == a {
@@ -106,7 +100,7 @@ func removePreloadedFile(a string, list []PreloadedFile) []PreloadedFile {
 	return list[:len(list)-1]
 }
 
-func hasPreloadedFile(a string, list []PreloadedFile) bool {
+func hasPreloadedFile(a string, list []t.PreloadedFile) bool {
 	for _, b := range list {
 		if b.File == a {
 			return true
