@@ -21,11 +21,12 @@ type History struct {
 	ComparisonImg    string
 	Progress         float64
 	Error            string `gorm:"size:10000"`
-	Status           string // encoding | failed | finished | copy
+	Status           string // encoding | failed | finished | copy | probe
 }
 
 func (j *History) Create(DB *gorm.DB, OldPath string) error {
 	j.OldPath = OldPath
+	j.Status = "probe"
 	if err := DB.Create(j).Error; err != nil {
 		log.Error("Failed to create history", err)
 		return err
