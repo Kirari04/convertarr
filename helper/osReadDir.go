@@ -24,8 +24,8 @@ func OSReadDir(root string, initNFiles uint64) (files []string, nFiles uint64, e
 			if !strings.HasPrefix(file.Name(), "/") {
 				newRootDir = fmt.Sprintf("%s/%s/", root, file.Name())
 			}
-			newFiles, addNFiles, err := OSReadDir(newRootDir, nFiles)
-			nFiles += addNFiles
+			newFiles, setNFiles, err := OSReadDir(newRootDir, nFiles)
+			nFiles = setNFiles
 			if err != nil {
 				return files, nFiles, err
 			}
