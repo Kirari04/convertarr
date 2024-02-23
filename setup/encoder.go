@@ -73,7 +73,23 @@ func encodeFile(file string) {
 	}
 
 	log.Infof("Encoding file %s\n", file)
-	fi, err := os.Stat(file)
+	output := strings.TrimSuffix(file, ".mkv")
+	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
+	tmpOutput := "tmp.mkv"
+	tmpInput := "tmpin.mkv"
+
+	defer os.Remove(tmpOutput)
+	defer os.Remove(tmpInput)
+
+	// copy file to locale path
+	if err := helper.Move(file, tmpInput); err != nil {
+		if err := history.Failed(app.DB, fmt.Sprintf("Failed to copy encoded file to input path: %v", err)); err != nil {
+			log.Errorf("Failed to update history %v\n", err)
+		}
+		return
+	}
+
+	fi, err := os.Stat(tmpInput)
 	if err != nil {
 		log.Errorf("Failed to read filesize %v\n", err)
 		if err := history.Failed(app.DB, err.Error()); err != nil {
@@ -86,7 +102,7 @@ func encodeFile(file string) {
 		log.Errorf("Failed to update history %v\n", err)
 	}
 
-	hash, err := helper.HashFile(file)
+	hash, err := helper.HashFile(tmpInput)
 	if err != nil {
 		if err := history.Failed(app.DB, err.Error()); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
@@ -96,12 +112,6 @@ func encodeFile(file string) {
 	if err := history.SetHash(app.DB, hash); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
 	}
-
-	output := strings.TrimSuffix(file, ".mkv")
-	output = fmt.Sprintf("%s[encoded]%s", output, ".mkv")
-	tmpOutput := "tmp.mkv"
-
-	defer os.Remove(tmpOutput)
 
 	if err := history.SetNewPath(app.DB, output); err != nil {
 		log.Errorf("Failed to update history %v\n", err)
@@ -117,7 +127,7 @@ func encodeFile(file string) {
 	defer cancelFn()
 
 	// probe file
-	data, err := ffprobe.ProbeURL(ctx, file)
+	data, err := ffprobe.ProbeURL(ctx, tmpInput)
 	if err != nil {
 		if err := history.Failed(app.DB, err.Error()); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
@@ -146,7 +156,7 @@ func encodeFile(file string) {
 	// https://trac.ffmpeg.org/ticket/3730
 	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	startTime := time.Now()
-	if err := helper.Encode(file, tmpOutput, history); err != nil {
+	if err := helper.Encode(tmpInput, tmpOutput, history); err != nil {
 		if err := history.Failed(app.DB, err.Error()); err != nil {
 			log.Errorf("Failed to update history %v\n", err)
 		}
@@ -158,7 +168,7 @@ func encodeFile(file string) {
 		ffmpegImgCommand := `ffmpeg ` +
 			`-t 1 -s 1920x2160 -f rawvideo -pix_fmt rgb24 -r 25 ` +
 			`-i /dev/zero ` +
-			fmt.Sprintf(`-i "%s" `, file) +
+			fmt.Sprintf(`-i "%s" `, tmpInput) +
 			fmt.Sprintf(`-i "%s" `, tmpOutput) +
 			`-filter_complex ` +
 			`"[0:v]scale=-2:2160[bg]; ` +
