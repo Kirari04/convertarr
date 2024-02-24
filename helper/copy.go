@@ -62,7 +62,7 @@ func Copy(srcpath, dstpath string) (err error) {
 		}
 	}()
 
-	_, err = io.CopyN(progressWriter, srcFile, 5_000_000)
+	_, err = io.CopyBuffer(progressWriter, srcFile, nil)
 	if err != nil {
 		return err
 	}
