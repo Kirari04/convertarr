@@ -60,12 +60,13 @@ func Copier() {
 		// predict needed files
 		for {
 			time.Sleep(2 * time.Second)
-			nthFileToEncode := 0
 			if app.Setting.EnableEncoding && // encoding is enabled
 				app.Setting.PreCopyFileCount > 0 && // preload is enabled
-				len(app.PreloadedFiles) < app.Setting.PreCopyFileCount && // max preloaded files heck
+				(len(app.PreloadedFiles) < app.Setting.PreCopyFileCount || overwriteNextPreloadFile != "") && // max preloaded files check, skip if overwriteNextPreloadFile is set
 				!app.IsFileScanning && // not scanning => meaning app.FilesToEncode won't be altered
 				len(app.FilesToEncode) > 0 { // has any files to encode
+				// we have a for loop here so we can instantly choose another file if it already is preloaded
+				nthFileToEncode := 0
 				for {
 					if nthFileToEncode >= len(app.FilesToEncode) {
 						// all possible files had been already preloaded
@@ -100,18 +101,20 @@ func Copier() {
 						IsReady: false,
 					}
 					app.PreloadedFiles = append(app.PreloadedFiles, &preloadedFile)
+					overwriteNextPreloadFile = ""
 
 					// copy file to tmp path
 					if err := helper.Copy(fileToEncode, tmpFilePath); err != nil {
 						os.Remove(tmpFilePath)
 						log.Errorf("Copier Failed to copy file to tmp folder: %v", err)
 						app.PreloadedFiles = removePreloadedFile(fileToEncode, app.PreloadedFiles)
-						continue
+						break
 					}
 
 					preloadedFile.IsReady = true
 
 					log.Infof("Finished copier on file: %s", fileToEncode)
+					break
 				}
 			}
 		}
