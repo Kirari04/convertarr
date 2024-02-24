@@ -34,7 +34,7 @@ templ Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool,
 					<div class="level-item has-text-centered">
 						<div>
 							<p class="heading">Preloaded Files</p>
-							<p class="title">{ fmt.Sprint(len(app.PreloadedFiles)) }</p>
+							<p class="title">{ fmt.Sprint(len(app.PreloadedFiles.Get())) }</p>
 							<p>
 								Copier preloads the files into the tmp folder. 
 							</p>

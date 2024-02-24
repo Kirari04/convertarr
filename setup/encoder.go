@@ -100,6 +100,7 @@ func encodeFile(file string) {
 			return
 		}
 		log.Infof("Received file from copier %s", file)
+		app.PreloadedFiles.Remove(file)
 	} else {
 		log.Infof("Copy file for Encoding to local folder %s\n", file)
 		// copy file to locale path

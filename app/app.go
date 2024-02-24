@@ -34,4 +34,6 @@ var Cache = cache.New(5*time.Minute, 10*time.Minute)
 var AwaitForFileCopy string
 var AwaitForFileCopyChan = make(chan string)
 
-var PreloadedFiles []*t.PreloadedFile
+var PreloadedFiles *t.TPreloadedFiles = &t.TPreloadedFiles{
+	List: []*t.PreloadedFile{},
+}
