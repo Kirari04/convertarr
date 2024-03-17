@@ -106,7 +106,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 		} else {
 			log.Info("Encoding Hevc using Software interface")
 			ffmpegCmd = fmt.Sprintf(`ffmpeg -i "%s" \
-					-threads 1 \
+					-threads %d \
 					-c:v libx265 \
 					-map 0:v:0 \
 					-c:a copy \
@@ -118,7 +118,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 					-filter:v scale=%d:-2 \
 					"%s" %s -y`,
 				inputFile,
-				crf, allowThreads, size, outputFile,
+				allowThreads, crf, allowThreads, size, outputFile,
 				fmt.Sprintf("-progress unix://%s -y", TempSock(
 					videoDuration,
 					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
