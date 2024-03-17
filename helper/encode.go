@@ -3,16 +3,16 @@ package helper
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoder/app"
 	"encoder/m"
 	"fmt"
-	"math"
 	"os"
 	"os/exec"
 	"runtime"
-	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
@@ -36,234 +36,120 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 	log.Infof("Time Taken => FFProbe: %s", time.Since(timeStart))
 	timeStart = time.Now()
 
-	// export audio and subtitles
-	ffmpegMetadata := fmt.Sprintf(`ffmpeg -i "%s" \
-	-threads 0 \
-	-map 0:a? \
-	-map 0:s? \
-	-c copy \
-	"%s" -y`, inputFile, tmpMetadataFile)
-
-	cmdM := exec.Command(
-		"bash",
-		"-c",
-		ffmpegMetadata)
-
-	var outbM, errbM bytes.Buffer
-	cmdM.Stdout = &outbM
-	cmdM.Stderr = &errbM
-
-	if err := cmdM.Run(); err != nil {
-		return fmt.Errorf(
-			"error happend while exporting audios and subtitles: %v\nout: %v\nerr: %v\nCommand: %s",
-			err.Error(), outbM.String(), errbM.String(), ffmpegMetadata,
-		)
-	}
-	log.Infof("Time Taken => Export A/S: %s", time.Since(timeStart))
-	timeStart = time.Now()
-
 	videoDuration := data.Format.Duration().Seconds()
-	m3u8Str := "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:0"
 
-	threadsPerEncode := 2
 	allowThreads := app.Setting.EncodingThreads
 	if allowThreads <= 0 {
 		allowThreads = runtime.NumCPU()
 	}
-	threads := int(math.Floor(float64(allowThreads) / float64(threadsPerEncode)))
-	threadChan := make(chan int, threads)
-
 	size := app.Setting.EncodingResolution
 	crf := app.Setting.EncodingCrf
 
-	var chunckLen float64 = 15
-	chuncks := int(math.Ceil(videoDuration / chunckLen))
-	finishedChuncks := 0
-
-	var preSeekedChunck bool
-	var encodingHasError error
-
-	var wg sync.WaitGroup
-	wg.Add(chuncks)
-	for i := 0; i < chuncks; i++ {
-		if preSeekedChunck {
-			log.Info("Preseeked chunck (skipping last)")
-			wg.Done()
-			continue
-		}
-		if encodingHasError != nil {
-			wg.Done()
-			continue
-		}
-
-		threadChan <- i
-		tmpFile := fmt.Sprintf("%s/output%d.ts", tmpDir, i)
-		from := chunckLen * (float64(i) + 0)
-		to := chunckLen * (float64(i) + 1)
-		nextFrom := chunckLen * (float64(i) + 1)
-		nextTo := chunckLen * (float64(i) + 2)
-
-		// change chunck size depeding on position in video
-		if to > videoDuration {
-			to = videoDuration
-		}
-		if nextTo > videoDuration {
-			nextTo = videoDuration
-		}
-		if nextTo-nextFrom < chunckLen {
-			to = videoDuration
-			preSeekedChunck = true
-		}
-		tmpThreadsPerEncode := threadsPerEncode
-		if preSeekedChunck {
-			// allow last encodet to use more pools so encoding finishes faster
-			tmpThreadsPerEncode = runtime.NumCPU()
-		}
-
-		m3u8Str += fmt.Sprintf("\n#EXTINF:%.6f,\noutput%d.ts", to-from, i)
-		log.Infof("%s from: %.2f to: %.2f time: %s", tmpFile, from, to, time.Since(timeStart))
-		defer os.Remove(tmpFile)
-
-		// generate ffmpeg code
-		var ffmpegCmd string
-		if app.Setting.EnableHevcEncoding {
-			if app.Setting.EnableAmdGpuEncoding {
-				log.Info("Encoding Hevc using Vaapi interface")
-				ffmpegCmd = fmt.Sprintf(`ffmpeg \
+	// generate ffmpeg code
+	var ffmpegCmd string
+	if app.Setting.EnableHevcEncoding {
+		if app.Setting.EnableAmdGpuEncoding {
+			log.Info("Encoding Hevc using Vaapi interface")
+			ffmpegCmd = fmt.Sprintf(`ffmpeg \
 					-vaapi_device /dev/dri/renderD128 \
-					-ss %.6f -t %.6f -i "%s" \
+					-i "%s" \
 					-vf 'format=nv12,hwupload,scale_vaapi=%d:-2' \
 					-threads %d \
 					-c:v hevc_vaapi \
 					-map 0:v:0 \
+					-c:a copy \
+					-c:s copy \
+					-map 0:a? \
+					-map 0:s? \
 					-rc_mode CQP -pix_fmt vaapi -profile:v main \
 					-global_quality %d \
-					"%s" -y`,
-					from,
-					to-from,
-					inputFile,
-					size,
-					tmpThreadsPerEncode,
-					crf,
-					tmpFile,
-				)
-			} else if app.Setting.EnableNvidiaGpuEncoding {
-				log.Info("Encoding Hevc using Cuda interface")
-				ffmpegCmd = fmt.Sprintf(`ffmpeg \
+					"%s" %s -y`,
+				inputFile,
+				size,
+				allowThreads,
+				crf,
+				outputFile,
+				fmt.Sprintf("-progress unix://%s -y", TempSock(
+					videoDuration,
+					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+					history,
+				)), // progress tracking
+			)
+		} else if app.Setting.EnableNvidiaGpuEncoding {
+			log.Info("Encoding Hevc using Cuda interface")
+			ffmpegCmd = fmt.Sprintf(`ffmpeg \
 					-hwaccel_device 0 \
-					-ss %.6f -t %.6f -i "%s" \
+					-i "%s" \
 					-threads %d \
 					-c:v hevc_nvenc \
 					-map 0:v:0 \
+					-c:a copy \
+					-c:s copy \
+					-map 0:a? \
+					-map 0:s? \
 					-rc:v vbr \
 					-cq:v %d \
 					-pix_fmt p010le -profile:v main \
 					-vf "scale=%d:-2" \
-					"%s" -y`,
-					from,
-					to-from,
-					inputFile,
-					tmpThreadsPerEncode,
-					crf,
-					size,
-					tmpFile,
-				)
-			} else {
-				log.Info("Encoding Hevc using Software interface")
-				ffmpegCmd = fmt.Sprintf(`ffmpeg -ss %.6f -t %.6f -i "%s" \
+					"%s" %s -y`,
+				inputFile,
+				allowThreads,
+				crf,
+				size,
+				outputFile,
+				fmt.Sprintf("-progress unix://%s -y", TempSock(
+					videoDuration,
+					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+					history,
+				)), // progress tracking
+			)
+		} else {
+			log.Info("Encoding Hevc using Software interface")
+			ffmpegCmd = fmt.Sprintf(`ffmpeg -i "%s" \
 					-threads 1 \
 					-c:v libx265 \
 					-map 0:v:0 \
+					-c:a copy \
+					-c:s copy \
+					-map 0:a? \
+					-map 0:s? \
 					-pix_fmt yuv420p -profile:v main \
 					-x265-params crf=%d:pools=%d -strict experimental \
 					-filter:v scale=%d:-2 \
-					"%s" -y`,
-					from,
-					to-from,
-					inputFile,
-					crf, tmpThreadsPerEncode, size, tmpFile,
-				)
-			}
-		} else {
-			log.Info("Encoding H264 using Software interface")
-			ffmpegCmd = fmt.Sprintf(`ffmpeg -ss %.6f -t %.6f -i "%s" \
+					"%s" %s -y`,
+				inputFile,
+				crf, allowThreads, size, outputFile,
+				fmt.Sprintf("-progress unix://%s -y", TempSock(
+					videoDuration,
+					fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+					history,
+				)), // progress tracking
+			)
+		}
+	} else {
+		log.Info("Encoding H264 using Software interface")
+		ffmpegCmd = fmt.Sprintf(`ffmpeg -i "%s" \
 					-threads %d \
 					-c:v libx264 \
 					-map 0:v:0 \
+					-c:a copy \
+					-c:s copy \
+					-map 0:a? \
+					-map 0:s? \
 					-pix_fmt yuv420p -profile:v main \
 					-crf %d \
 					-filter:v scale=%d:-2 \
-					"%s" -y`,
-				from,
-				to-from,
-				inputFile,
-				tmpThreadsPerEncode,
-				crf, size, tmpFile,
-			)
-		}
-		go func(i int) {
-			defer wg.Done()
-			defer func() {
-				<-threadChan
-				finishedChuncks++
-
-				// update progress
-				progress := ((1) / float64(chuncks)) * float64(finishedChuncks)
-				if err := history.SetProgress(app.DB, progress); err != nil {
-					log.Errorf("Failed to set progress: %v", err)
-				}
-				timeTaken := time.Since(history.CreatedAt).Seconds()
-				predictTime := (timeTaken / (progress * 100)) * 100
-				if err := history.SetPredictTimeTaken(app.DB, time.Duration(predictTime)*time.Second); err != nil {
-					log.Errorf("Failed to set predictTime: %v", err)
-				}
-			}()
-			cmd := exec.Command(
-				"bash",
-				"-c",
-				ffmpegCmd)
-
-			var outb, errb bytes.Buffer
-			cmd.Stdout = &outb
-			cmd.Stderr = &errb
-
-			if err := cmd.Run(); err != nil {
-				encodingHasError = fmt.Errorf(
-					"error happend while encoding chunck %d: %v\nout: %v\nerr: %v\nCommand: %s",
-					i, err.Error(), outbM.String(), errbM.String(), ffmpegCmd,
-				)
-				return
-			}
-		}(i)
+					"%s" %s -y`,
+			inputFile,
+			allowThreads,
+			crf, size, outputFile,
+			fmt.Sprintf("-progress unix://%s -y", TempSock(
+				videoDuration,
+				fmt.Sprintf("%x", sha256.Sum256([]byte(uuid.NewString()))),
+				history,
+			)), // progress tracking
+		)
 	}
-	m3u8Str += "\n#EXT-X-ENDLIST"
-	wg.Wait()
-
-	// check if any chunck failed
-	if encodingHasError != nil {
-		return fmt.Errorf("encoding Failed with error: %v", encodingHasError)
-	}
-
-	log.Infof("Time Taken => Encode V: %s", time.Since(timeStart))
-	timeStart = time.Now()
-
-	// combine chuncks with audios and subtitles
-	m3u8Path := fmt.Sprintf("%s/output.m3u8", tmpDir)
-	defer os.Remove(m3u8Path)
-
-	if err := os.WriteFile(m3u8Path, []byte(m3u8Str), 0644); err != nil {
-		return fmt.Errorf("failed to create master.m3u8: %v", err)
-	}
-
-	ffmpegCmd := fmt.Sprintf(`ffmpeg \
-	-i "%s" \
-	-i "%s" \
-	-map 0:v:0 \
-	-map 1:a? \
-	-map 1:s? \
-	-c copy \
-	"%s" -y`, m3u8Path, tmpMetadataFile, outputFile)
-
 	cmd := exec.Command(
 		"bash",
 		"-c",
@@ -275,10 +161,11 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf(
-			"error happend while combining video with audios and subtitles: %v\nout: %v\nerr: %v\nCommand: %s",
-			err.Error(), outbM.String(), errbM.String(), ffmpegMetadata,
+			"error happend while encoding: %v\nout: %v\nerr: %v\nCommand: %s",
+			err.Error(), outb.String(), errb.String(), ffmpegCmd,
 		)
 	}
+
 	log.Infof("Time Taken => Assemble A/S/V: %s", time.Since(timeStart))
 	log.Infof("Time Taken => Total: %s", time.Since(timeStartTotal))
 
