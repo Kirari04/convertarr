@@ -4,8 +4,8 @@ import (
 	"encoder/app"
 	"os"
 
-	"github.com/glebarez/sqlite"
 	"github.com/labstack/gommon/log"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
