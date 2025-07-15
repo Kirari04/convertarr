@@ -224,8 +224,8 @@ func Index(Ctx t.TemplCtx, Title string, longStats bool, savedStorage string, en
 
 func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_chartData_64fa`,
-		Function: `function __templ_chartData_64fa(longStats, intervalSeconds){// --- Helper Functions ---
+		Name: `__templ_chartData_80c3`,
+		Function: `function __templ_chartData_80c3(longStats, intervalSeconds){// --- Helper Functions ---
     function humanFileSize(bytes, si = false, dp = 1) {
         const thresh = si ? 1000 : 1024;
         if (Math.abs(bytes) < thresh) {
@@ -261,7 +261,7 @@ func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
     };
 
     // --- Chart State ---
-    var chart;
+    window['chart'] = null;
     const dataUrl = ` + "`" + `/stats/data${longStats ? '?long=yes' : ''}` + "`" + `;
 
     // --- Chart Logic ---
@@ -278,22 +278,25 @@ func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
 
             // Pair each data point with its corresponding timestamp, which is required for a datetime axis.
             const seriesData = [
-                { name: 'CPU Usage', type: 'area', data: (resources.Cpu || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Memory Usage', type: 'area', data: (resources.Mem || []).map((y, i) => [timestamps[i], y]) },
+                { name: 'CPU Usage', type: 'area', data: (resources.Cpu || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Network Out', type: 'line', data: (resources.NetOut || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Network In', type: 'line', data: (resources.NetIn || []).map((y, i) => [timestamps[i], y]) }
             ];
 
-            if (!chart) {
-                // Initial Render: Create the chart instance if it doesn't exist.
+            if (!window['chart']) {
+                // Initial Render: Create the window['chart'] instance if it doesn't exist.
                 const options = {
                     series: seriesData,
                     chart: {
                         height: 350,
                         type: 'line',
                         stacked: false, // Allows series to overlap, which is necessary for different scales.
-                        zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
-                        toolbar: { autoSelected: 'zoom' }
+                        zoom: { enabled: !!longStats, type: 'x', autoScaleYaxis: true },
+                    },
+                    theme: {
+                        mode: 'dark',
+                        palette: 'palette1'
                     },
                     dataLabels: { enabled: false },
                     stroke: { width: [2, 2, 2, 2], curve: 'smooth' },
@@ -343,11 +346,11 @@ func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
                         horizontalAlign: 'center',
                     }
                 };
-                chart = new ApexCharts(document.querySelector("#resource-chart"), options);
-                chart.render();
+                window['chart'] = new ApexCharts(document.querySelector("#resource-chart"), options);
+                window['chart'].render();
             } else {
-                // Update existing chart with new data.
-                chart.updateSeries(seriesData);
+                // Update existing window['chart'] with new data.
+                window['chart'].updateSeries(seriesData);
             }
 
         } catch (error) {
@@ -357,10 +360,12 @@ func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
 
     // Initial render, then set an interval for periodic updates.
     updateAndRenderChart();
-    setInterval(updateAndRenderChart, intervalSeconds * 1000);
+    if (!longStats) {
+        setInterval(updateAndRenderChart, intervalSeconds * 1000);
+    }
 }`,
-		Call:       templ.SafeScript(`__templ_chartData_64fa`, longStats, intervalSeconds),
-		CallInline: templ.SafeScriptInline(`__templ_chartData_64fa`, longStats, intervalSeconds),
+		Call:       templ.SafeScript(`__templ_chartData_80c3`, longStats, intervalSeconds),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_80c3`, longStats, intervalSeconds),
 	}
 }
 

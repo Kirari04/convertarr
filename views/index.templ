@@ -124,7 +124,7 @@ script chartData(longStats bool, intervalSeconds int) {
     };
 
     // --- Chart State ---
-    var chart;
+    window['chart'] = null;
     const dataUrl = `/stats/data${longStats ? '?long=yes' : ''}`;
 
     // --- Chart Logic ---
@@ -141,22 +141,25 @@ script chartData(longStats bool, intervalSeconds int) {
 
             // Pair each data point with its corresponding timestamp, which is required for a datetime axis.
             const seriesData = [
-                { name: 'CPU Usage', type: 'area', data: (resources.Cpu || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Memory Usage', type: 'area', data: (resources.Mem || []).map((y, i) => [timestamps[i], y]) },
+                { name: 'CPU Usage', type: 'area', data: (resources.Cpu || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Network Out', type: 'line', data: (resources.NetOut || []).map((y, i) => [timestamps[i], y]) },
                 { name: 'Network In', type: 'line', data: (resources.NetIn || []).map((y, i) => [timestamps[i], y]) }
             ];
 
-            if (!chart) {
-                // Initial Render: Create the chart instance if it doesn't exist.
+            if (!window['chart']) {
+                // Initial Render: Create the window['chart'] instance if it doesn't exist.
                 const options = {
                     series: seriesData,
                     chart: {
                         height: 350,
                         type: 'line',
                         stacked: false, // Allows series to overlap, which is necessary for different scales.
-                        zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
-                        toolbar: { autoSelected: 'zoom' }
+                        zoom: { enabled: !!longStats, type: 'x', autoScaleYaxis: true },
+                    },
+                    theme: {
+                        mode: 'dark',
+                        palette: 'palette1'
                     },
                     dataLabels: { enabled: false },
                     stroke: { width: [2, 2, 2, 2], curve: 'smooth' },
@@ -206,11 +209,11 @@ script chartData(longStats bool, intervalSeconds int) {
                         horizontalAlign: 'center',
                     }
                 };
-                chart = new ApexCharts(document.querySelector("#resource-chart"), options);
-                chart.render();
+                window['chart'] = new ApexCharts(document.querySelector("#resource-chart"), options);
+                window['chart'].render();
             } else {
-                // Update existing chart with new data.
-                chart.updateSeries(seriesData);
+                // Update existing window['chart'] with new data.
+                window['chart'].updateSeries(seriesData);
             }
 
         } catch (error) {
@@ -220,5 +223,7 @@ script chartData(longStats bool, intervalSeconds int) {
 
     // Initial render, then set an interval for periodic updates.
     updateAndRenderChart();
-    setInterval(updateAndRenderChart, intervalSeconds * 1000);
+    if (!longStats) {
+        setInterval(updateAndRenderChart, intervalSeconds * 1000);
+    }
 }
