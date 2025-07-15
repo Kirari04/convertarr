@@ -13,7 +13,8 @@ docker run -d \
   -e TZ=Etc/UTC \
   -p 8080:8080 \
   -v /path/to/data:/app/database \
-  -v /path/to/videofiles:/videofiles `#optional` \
+  -v /path/to/comparisonimages:/app/img \
+  -v /path/to/videofiles:/videofiles \
   --restart unless-stopped \
   kirari04/convertarr:latest
 ```
@@ -32,7 +33,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /path/to/data:/app/database
-      - /path/to/videofiles:/videofiles #optional
+      - /path/to/comparisonimages:/app/img
+      - /path/to/videofiles:/videofiles
     ports:
       - 8080:8080
     restart: unless-stopped
@@ -43,7 +45,7 @@ services:
 ### Server Application
 
 ```bash
-go run main.go serve
+make dev
 ```
 
 ### Watch Templ
