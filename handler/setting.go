@@ -207,15 +207,39 @@ func PostSetting(c echo.Context) error {
 		)
 	}
 
-	if !settingTmp.EnableHevcEncoding && (settingTmp.EnableAmdGpuEncoding || settingTmp.EnableNvidiaGpuEncoding) {
-		return helper.Render(c,
-			http.StatusBadRequest,
-			views.Setting(
-				helper.TCtxWError(c, errors.New("hardware encoding can only be done on Hevc Encoding enabled")),
-				fmt.Sprintf("%s - Setting", app.Name),
-				v,
-			),
-		)
+	// Check for GPU encoder availability before saving settings
+	if settingTmp.EnableAmdGpuEncoding {
+		codecToCheck := "h264_vaapi"
+		if settingTmp.EnableHevcEncoding {
+			codecToCheck = "hevc_vaapi"
+		}
+		if !helper.IsEncoderAvailable(codecToCheck) {
+			return helper.Render(c,
+				http.StatusBadRequest,
+				views.Setting(
+					helper.TCtxWError(c, fmt.Errorf("AMD GPU encoder '%s' is not available on this system", codecToCheck)),
+					fmt.Sprintf("%s - Setting", app.Name),
+					v,
+				),
+			)
+		}
+	}
+
+	if settingTmp.EnableNvidiaGpuEncoding {
+		codecToCheck := "h264_nvenc"
+		if settingTmp.EnableHevcEncoding {
+			codecToCheck = "hevc_nvenc"
+		}
+		if !helper.IsEncoderAvailable(codecToCheck) {
+			return helper.Render(c,
+				http.StatusBadRequest,
+				views.Setting(
+					helper.TCtxWError(c, fmt.Errorf("NVIDIA GPU encoder '%s' is not available on this system", codecToCheck)),
+					fmt.Sprintf("%s - Setting", app.Name),
+					v,
+				),
+			)
+		}
 	}
 
 	if settingTmp.EnableEncoding {

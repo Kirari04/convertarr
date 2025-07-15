@@ -176,9 +176,6 @@ func encodeFile(file string) {
 		return
 	}
 
-	// https://www.tauceti.blog/posts/linux-ffmpeg-amd-5700xt-hardware-video-encoding-hevc-h265-vaapi/
-	// https://trac.ffmpeg.org/ticket/3730
-	// https://x265.readthedocs.io/en/latest/cli.html#performance-options
 	startTime := time.Now()
 	if err := helper.Encode(tmpInput, tmpOutput, history); err != nil {
 		if err := history.Failed(app.DB, err.Error()); err != nil {
@@ -189,7 +186,13 @@ func encodeFile(file string) {
 
 	// generate image comparison
 	if app.Setting.EnableImageComparison {
+		// Ensure the output directory exists to prevent errors.
+		if err := os.MkdirAll("./imgs", os.ModePerm); err != nil {
+			log.Errorf("Failed to create image directory ./imgs: %v\n", err)
+		}
+
 		imgOutputPath := fmt.Sprintf("./imgs/%s.jpg", uuid.NewString())
+		// Correctly construct the ffmpeg command for a single image output.
 		ffmpegImgCommand := `ffmpeg ` +
 			`-t 1 -s 1920x2160 -f rawvideo -pix_fmt rgb24 -r 25 ` +
 			`-i /dev/zero ` +
@@ -208,7 +211,8 @@ func encodeFile(file string) {
 			`[f3]setpts=PTS-STARTPTS,scale=-2:2160[fin]" ` +
 			`-map [fin] ` +
 			`-qscale:v 2 ` +
-			fmt.Sprintf(`-frames:v 1 "%s" -y`, imgOutputPath)
+			// Add the -update 1 flag to tell ffmpeg to output a single file.
+			fmt.Sprintf(`-frames:v 1 -update 1 "%s" -y`, imgOutputPath)
 
 		// create comparison image
 		cmdImg := exec.Command(
