@@ -7,7 +7,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-gormigrate/gormigrate/v2 v2.1.4
 	github.com/go-playground/validator/v10 v10.27.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/labstack/gommon v0.4.2
 	github.com/thatisuday/commando v1.0.4
@@ -17,7 +16,7 @@ require (
 	gorm.io/gorm v1.30.0
 )
 
-require github.com/mattn/go-sqlite3 v1.14.22 // indirect
+require github.com/mattn/go-sqlite3 v1.14.28 // indirect
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
