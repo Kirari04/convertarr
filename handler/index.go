@@ -4,7 +4,6 @@ import (
 	"encoder/app"
 	"encoder/helper"
 	"encoder/m"
-	"encoder/t"
 	"encoder/views"
 	"fmt"
 	"net/http"
@@ -52,40 +51,15 @@ func GetIndex(c echo.Context) error {
 		log.Error("Failed to get history stats", err)
 	}
 
-	var (
-		resourcesHistory t.Resources
-	)
-	shortBreakpoint := 48
-	if !longStats && len(app.ResourcesHistory.Cpu) > shortBreakpoint {
-		resourcesHistory.Cpu = app.ResourcesHistory.Cpu[len(app.ResourcesHistory.Cpu)-shortBreakpoint:]
-	} else {
-		resourcesHistory.Cpu = app.ResourcesHistory.Cpu
-	}
-	if !longStats && len(app.ResourcesHistory.Mem) > shortBreakpoint {
-		resourcesHistory.Mem = app.ResourcesHistory.Mem[len(app.ResourcesHistory.Mem)-shortBreakpoint:]
-	} else {
-		resourcesHistory.Mem = app.ResourcesHistory.Mem
-	}
-	if !longStats && len(app.ResourcesHistory.NetOut) > shortBreakpoint {
-		resourcesHistory.NetOut = app.ResourcesHistory.NetOut[len(app.ResourcesHistory.NetOut)-shortBreakpoint:]
-	} else {
-		resourcesHistory.NetOut = app.ResourcesHistory.NetOut
-	}
-	if !longStats && len(app.ResourcesHistory.NetIn) > shortBreakpoint {
-		resourcesHistory.NetIn = app.ResourcesHistory.NetIn[len(app.ResourcesHistory.NetIn)-shortBreakpoint:]
-	} else {
-		resourcesHistory.NetIn = app.ResourcesHistory.NetIn
-	}
-
 	return helper.Render(c,
 		http.StatusOK,
 		views.Index(
 			helper.TCtx(c),
 			fmt.Sprintf("%s - Home", app.Name),
-			resourcesHistory,
 			longStats,
 			humanize.Bytes(uint64(savedStorage)),
 			fmt.Sprint(encodedFiles),
+			int(app.ResourcesInterval.Seconds()),
 		),
 	)
 }

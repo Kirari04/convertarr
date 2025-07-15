@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, savedStorage string, encodedFiles string) templ.Component {
+func Index(Ctx t.TemplCtx, Title string, longStats bool, savedStorage string, encodedFiles string, intervalSeconds int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -49,133 +49,133 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<article class=\"message\"><div class=\"message-header\"><p>Server Resource Ussage</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<article class=\"message\"><div class=\"message-header\"><p>Dashboard</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if longStats {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<a href=\"/\" class=\"button is-primary\">Live Stats</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<a href=\"/\" class=\"button is-primary\">Show Live Stats</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"/?long=yes\" class=\"button is-primary\">Long Stats</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"/?long=yes\" class=\"button is-primary\">Show Long-Term Stats</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"message-body\"><nav class=\"level\" style=\"align-items: start;\"><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Files in queue</p><p class=\"title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"message-body\"><div class=\"columns is-multiline has-text-centered\"><div class=\"column is-flex\"><article class=\"box\" style=\"width: 100%;\"><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(app.FilesToEncode)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 31, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 30, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div></div><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Preloaded Files</p><p class=\"title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p><p class=\"subtitle\">Files in Queue</p></article></div><div class=\"column is-flex\"><article class=\"box\" style=\"width: 100%;\"><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(app.PreloadedFiles.Get())))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 37, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 36, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p><p>Copier preloads the files into the tmp folder. </p></div></div><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Checked Files</p><p class=\"title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p><p class=\"subtitle\">Pre-Copied Files</p><p class=\"help\">Files copied locally, ready for encoding.</p></article></div><div class=\"column is-flex\"><article class=\"box\" style=\"width: 100%;\"><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", app.LastScanNFiles))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 48, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 43, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><p class=\"subtitle\">Files Scanned</p><p class=\"help\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if app.LastFileScan != nil {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "checked ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "Last scan ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0fs", time.Since(*app.LastFileScan).Seconds()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 51, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 47, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ago ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "s ago. ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "checked never ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "Never scanned. ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if app.IsFileScanning {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "(scanning now...)")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"tag is-info is-light\">Scanning...</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></div></div><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Saved storage</p><p class=\"title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></article></div><div class=\"column is-flex\"><article class=\"box\" style=\"width: 100%;\"><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(savedStorage)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 64, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 59, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p></div></div><div class=\"level-item has-text-centered\"><div><p class=\"heading\">Encoded Files</p><p class=\"title\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p><p class=\"subtitle\">Storage Saved</p></article></div><div class=\"column is-flex\"><article class=\"box\" style=\"width: 100%;\"><p class=\"title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(encodedFiles)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 70, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 65, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</p></div></div></nav>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</p><p class=\"subtitle\">Files Encoded</p></article></div></div><div class=\"box\"><h3 class=\"title is-4\">Server Resource Usage</h3>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if longStats {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<p>Showing Long Stats (avg cpu ussage over the last ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<p class=\"subtitle is-6\">Showing long-term stats (average CPU/Mem/Net usage over the last ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s", app.ResourcesInterval*time.Duration(app.MaxResourcesHistory)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 76, Col: 138}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 75, Col: 153}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -186,14 +186,14 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<p>Showing Short Stats (more accurate cpu ussage over the last ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<p class=\"subtitle is-6\">Showing live stats (more accurate CPU/Mem/Net usage over the last ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s", app.ResourcesInterval*time.Duration(48)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 80, Col: 128}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/index.templ`, Line: 79, Col: 133}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -204,11 +204,11 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div id=\"chart\"></div><div id=\"chart2\"></div></div></article>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div id=\"resource-chart\"></div></div></div></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = chartData(resources, app.MaxResourcesHistory).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = chartData(longStats, intervalSeconds).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -222,140 +222,145 @@ func Index(Ctx t.TemplCtx, Title string, resources t.Resources, longStats bool, 
 	})
 }
 
-func chartData(resources t.Resources, maxResourcesHistory int) templ.ComponentScript {
+func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_chartData_4090`,
-		Function: `function __templ_chartData_4090(resources, maxResourcesHistory){const optimizeChartSeries = (data) => {
-		if(!data){
-			return [0]
-		}
-		const maxLen = 48;
-		const currentLen = data.length;
-		if(currentLen <= maxLen) {
-			return data;
-		}
-		const ratio = Math.ceil(currentLen / maxLen)
-		let newData = []
-		for(let i = 0; i < maxLen; i++){
-			let dataSlice = [];
-			// console.log("combine " + i)
-			for(let x = 0; x < ratio; x++){
-				// console.log("data " + ((i * ratio) + x))
-				if(data[((i * ratio) + x)]){
-					dataSlice.push(data[x * i])
-				}
-			}
-			if(dataSlice.length > 0){
-				const sum = dataSlice.reduce((a, b) => a + b, 0);
-				const avg = (sum / dataSlice.length) || 0;
-				newData.push(avg)	
-			}
-		}
-		return newData;
-	}
-
-	var options = {
-		chart: {
-			type: "line",
-			height: "300px",
-
-		},
-		series: [
-			{
-				name: "Cpu Ussage",
-				data: optimizeChartSeries(resources.Cpu),
-			},
-			{
-				name: "Memory Ussage",
-				data: optimizeChartSeries(resources.Mem),
-			}
-		],
-		xaxis: {
-			categories: Array.from(Array(maxResourcesHistory).keys()),
-		},
-		yaxis: {
-            labels: {
-                formatter: function (value) {
-                    return ` + "`" + `${Math.round(value)} %` + "`" + `
-                },
-            },
-            max: 100,
-			min: 0,
-        },
-        tooltip: {
-            y: {
-                formatter: function (value) {
-                    return ` + "`" + `${Math.round(value)} %` + "`" + `
-                },
-            },
+		Name: `__templ_chartData_64fa`,
+		Function: `function __templ_chartData_64fa(longStats, intervalSeconds){// --- Helper Functions ---
+    function humanFileSize(bytes, si = false, dp = 1) {
+        const thresh = si ? 1000 : 1024;
+        if (Math.abs(bytes) < thresh) {
+            return bytes + ' B';
         }
-	}
-	var chart = new ApexCharts(document.querySelector("#chart"), options);
+        const units = si
+            ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+            : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        let u = -1;
+        const r = 10 ** dp;
+        do {
+            bytes /= thresh;
+            ++u;
+        } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+        return bytes.toFixed(dp) + ' ' + units[u];
+    }
 
-	chart.render();
-
-	var options2 = {
-		chart: {
-			type: "line",
-			height: "300px",
-
-		},
-		series: [
-			{
-				name: "NetOut",
-				data: optimizeChartSeries(resources.NetOut),
-			},
-			{
-				name: "NetIn",
-				data: optimizeChartSeries(resources.NetIn),
-			}
-		],
-		xaxis: {
-			categories: Array.from(Array(maxResourcesHistory).keys()),
-		},
-		yaxis: {
-            labels: {
-                formatter: function (value) {
-                    return ` + "`" + `${humanFileSize(value)}/s` + "`" + `
-                },
-            },
-        },
-        tooltip: {
-            y: {
-                formatter: function (value) {
-                    return ` + "`" + `${humanFileSize(value)}/s` + "`" + `
-                },
-            },
+    /**
+     * Generates an array of historical timestamps for the chart's X-axis.
+     * @param {number} dataLength - The number of data points.
+     * @param {number} interval - The interval between data points in seconds.
+     * @returns {number[]} - An array of timestamps in milliseconds.
+     */
+    const generateTimestamps = (dataLength, interval) => {
+        const timestamps = [];
+        const now = new Date().getTime();
+        for (let i = 0; i < dataLength; i++) {
+            // Work backwards from the current time to generate the timeline
+            const timestamp = now - ((dataLength - 1 - i) * interval * 1000);
+            timestamps.push(timestamp);
         }
-	}
-	var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+        return timestamps;
+    };
 
-	chart2.render();
+    // --- Chart State ---
+    var chart;
+    const dataUrl = ` + "`" + `/stats/data${longStats ? '?long=yes' : ''}` + "`" + `;
 
-	function humanFileSize(bytes, si = false, dp = 1) {
-		const thresh = si ? 1000 : 1024;
+    // --- Chart Logic ---
+    const updateAndRenderChart = async () => {
+        try {
+            const response = await fetch(dataUrl);
+            if (!response.ok) {
+                console.error("Failed to fetch stats data:", response.statusText);
+                return;
+            }
+            const resources = await response.json();
+            const dataLength = (resources.Cpu || []).length;
+            const timestamps = generateTimestamps(dataLength, intervalSeconds);
 
-		if (Math.abs(bytes) < thresh) {
-			return bytes + ' B';
-		}
+            // Pair each data point with its corresponding timestamp, which is required for a datetime axis.
+            const seriesData = [
+                { name: 'CPU Usage', type: 'area', data: (resources.Cpu || []).map((y, i) => [timestamps[i], y]) },
+                { name: 'Memory Usage', type: 'area', data: (resources.Mem || []).map((y, i) => [timestamps[i], y]) },
+                { name: 'Network Out', type: 'line', data: (resources.NetOut || []).map((y, i) => [timestamps[i], y]) },
+                { name: 'Network In', type: 'line', data: (resources.NetIn || []).map((y, i) => [timestamps[i], y]) }
+            ];
 
-		const units = si
-			? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-			: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-		let u = -1;
-		const r = 10 ** dp;
+            if (!chart) {
+                // Initial Render: Create the chart instance if it doesn't exist.
+                const options = {
+                    series: seriesData,
+                    chart: {
+                        height: 350,
+                        type: 'line',
+                        stacked: false, // Allows series to overlap, which is necessary for different scales.
+                        zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
+                        toolbar: { autoSelected: 'zoom' }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: { width: [2, 2, 2, 2], curve: 'smooth' },
+                    xaxis: {
+                        type: 'datetime', // The X-axis now represents time.
+                        labels: { datetimeUTC: false } // Display timestamps in the user's local timezone.
+                    },
+                    // Configure dual Y-axes: one for percentages (CPU/Mem) and one for data rates (Network).
+                    yaxis: [
+                        { // Primary Y-axis for CPU and Memory (%)
+                            seriesName: 'CPU Usage',
+                            axisTicks: { show: true },
+                            axisBorder: { show: true },
+                            title: { text: "CPU / Memory (%)" },
+                            min: 0,
+                            max: 100,
+                            labels: { formatter: (val) => ` + "`" + `${Math.round(val)} %` + "`" + ` }
+                        },
+                        { seriesName: 'Memory Usage', show: false, min: 0, max: 100 }, // Associates Memory with the first axis
+                        { // Secondary Y-axis for Network data (bytes/s), positioned on the right.
+                            seriesName: 'Network Out',
+                            opposite: true,
+                            axisTicks: { show: true },
+                            axisBorder: { show: true },
+                            title: { text: "Network Usage" },
+                            labels: { formatter: (val) => ` + "`" + `${humanFileSize(val, true, 1)}/s` + "`" + ` }
+                        },
+                        { seriesName: 'Network In', show: false, opposite: true } // Associates Network In with the second axis
+                    ],
+                    tooltip: {
+                        shared: true, // Show a single tooltip for all series at a given time point.
+                        intersect: false,
+                        x: { format: 'dd MMM yyyy - HH:mm:ss' },
+                        // Custom formatter to show the correct unit for each series.
+                        y: {
+                            formatter: (value, { seriesIndex }) => {
+                                if (seriesIndex < 2) { // CPU or Memory
+                                    return ` + "`" + `${Math.round(value)} %` + "`" + `;
+                                } else { // Network
+                                    return ` + "`" + `${humanFileSize(value, true, 2)}/s` + "`" + `;
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'center',
+                    }
+                };
+                chart = new ApexCharts(document.querySelector("#resource-chart"), options);
+                chart.render();
+            } else {
+                // Update existing chart with new data.
+                chart.updateSeries(seriesData);
+            }
 
-		do {
-			bytes /= thresh;
-			++u;
-		} while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+        } catch (error) {
+            console.error("Error updating charts:", error);
+        }
+    };
 
-
-		return bytes.toFixed(dp) + ' ' + units[u];
-	}
+    // Initial render, then set an interval for periodic updates.
+    updateAndRenderChart();
+    setInterval(updateAndRenderChart, intervalSeconds * 1000);
 }`,
-		Call:       templ.SafeScript(`__templ_chartData_4090`, resources, maxResourcesHistory),
-		CallInline: templ.SafeScriptInline(`__templ_chartData_4090`, resources, maxResourcesHistory),
+		Call:       templ.SafeScript(`__templ_chartData_64fa`, longStats, intervalSeconds),
+		CallInline: templ.SafeScriptInline(`__templ_chartData_64fa`, longStats, intervalSeconds),
 	}
 }
 
