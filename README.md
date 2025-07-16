@@ -57,4 +57,6 @@ templ generate --watch
 
 ```bash
 docker build --platform linux/amd64 -t kirari04/convertarr:latest --push .
+
+sudo docker buildx build  --platform linux/amd64 -t kirari04/convertarr:latest --sbom=true --provenance=true --push .
 ```
