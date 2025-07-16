@@ -1,7 +1,7 @@
 # Convertarr
 
 ![Dashboard](img/image.png)
-![Settings](img/image2.png)
+<!-- ![Settings](img/image2.png) -->
 
 ## Install using Docker
 
