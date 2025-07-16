@@ -20,7 +20,7 @@ func Copier() {
 		os.RemoveAll(tmpRootPath) // remove old tmp folders
 		// create new tmp flder
 		tmpPath := fmt.Sprintf("%s/%s", tmpRootPath, uuid.NewString())
-		if err := os.MkdirAll(tmpPath, 0777); err != nil {
+		if err := os.MkdirAll(tmpPath, os.ModePerm); err != nil {
 			log.Errorf("Failed to create tmp folder: %v", err)
 		}
 

@@ -15,7 +15,7 @@ func Db() {
 		log.Info("Using temporary database")
 		databasePath = "file::memory:?cache=shared"
 	} else {
-		if err := os.MkdirAll("./database", 0766); err != nil {
+		if err := os.MkdirAll("./database", os.ModePerm); err != nil {
 			log.Fatal("Failed to create db file", err)
 		}
 	}
