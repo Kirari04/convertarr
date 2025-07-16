@@ -34,7 +34,7 @@ func Default(Ctx t.TemplCtx, Title string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" style=\"height: 100%;\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -47,7 +47,7 @@ func Default(Ctx t.TemplCtx, Title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/resources/bulma.min.css\"><script src=\"/resources/apexcharts.js\"></script><script src=\"/resources/htmx.min.js\"></script></head><body><div class=\"container\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/resources/bulma.min.css\"><script src=\"/resources/apexcharts.js\"></script><script src=\"/resources/htmx.min.js\"></script></head><body style=\"display: flex; flex-direction: column; height: 100%;\"><div class=\"container\" style=\"flex: 1 0 auto;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,7 +78,7 @@ func Default(Ctx t.TemplCtx, Title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><footer class=\"footer\" style=\"flex-shrink: 0;\"><div class=\"content has-text-centered\"><p><strong>Convertarr</strong> by <a href=\"https://github.com/kirari04/convertarr\">kirari04</a>.</p><p>The ultimate media conversion tool.</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -7,7 +7,7 @@ import (
 
 templ Default(Ctx t.TemplCtx, Title string) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" style="height: 100%;">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -16,8 +16,8 @@ templ Default(Ctx t.TemplCtx, Title string) {
 			<script src="/resources/apexcharts.js"></script>
 			<script src="/resources/htmx.min.js"></script>
 		</head>
-		<body>
-			<div class="container">
+		<body style="display: flex; flex-direction: column; height: 100%;">
+			<div class="container" style="flex: 1 0 auto;">
 				@components.Navbar(Ctx)
 				if Ctx.Error != nil {
 					<article class="message is-danger">
@@ -31,6 +31,14 @@ templ Default(Ctx t.TemplCtx, Title string) {
 				}
 				{ children... }
 			</div>
+			<footer class="footer" style="flex-shrink: 0;">
+				<div class="content has-text-centered">
+					<p>
+						<strong>Convertarr</strong> by <a href="https://github.com/kirari04/convertarr">kirari04</a>.
+					</p>
+					<p>The ultimate media conversion tool.</p>
+				</div>
+			</footer>
 		</body>
 	</html>
 }
