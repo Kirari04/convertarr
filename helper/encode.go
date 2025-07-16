@@ -120,8 +120,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 			ffmpegCmd = fmt.Sprintf(`ffmpeg \
                     -vaapi_device /dev/dri/renderD128 \
                     -i "%s" \
-                    -vf 'format=nv12,hwupload,scale_vaapi=%d:-2' \
-                    -threads %d \
+                    -vf 'scale=%d:-2,format=nv12,hwupload' \
                     -c:v hevc_vaapi \
                     -map 0:v:0 \
                     -c:a copy \
@@ -133,7 +132,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
                     "%s" %s`,
 				inputFile,
 				size,
-				allowThreads,
 				crf,
 				outputFile,
 				progressSocketArg,
@@ -143,7 +141,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 			ffmpegCmd = fmt.Sprintf(`ffmpeg \
                     -hwaccel cuda -hwaccel_output_format cuda \
                     -i "%s" \
-                    -threads %d \
                     -c:v hevc_nvenc \
                     -map 0:v:0 \
                     -c:a copy \
@@ -156,7 +153,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
                     -vf "scale=%d:-2" \
                     "%s" %s`,
 				inputFile,
-				allowThreads,
 				crf,
 				size,
 				outputFile,
@@ -187,8 +183,7 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 			ffmpegCmd = fmt.Sprintf(`ffmpeg \
                     -vaapi_device /dev/dri/renderD128 \
                     -i "%s" \
-                    -vf 'format=nv12,hwupload,scale_vaapi=%d:-2' \
-                    -threads %d \
+                    -vf 'scale=%d:-2,format=nv12,hwupload' \
                     -c:v h264_vaapi \
                     -map 0:v:0 \
                     -c:a copy \
@@ -200,7 +195,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
                     "%s" %s`,
 				inputFile,
 				size,
-				allowThreads,
 				crf,
 				outputFile,
 				progressSocketArg,
@@ -210,7 +204,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
 			ffmpegCmd = fmt.Sprintf(`ffmpeg \
                     -hwaccel cuda -hwaccel_output_format cuda \
                     -i "%s" \
-                    -threads %d \
                     -c:v h264_nvenc \
                     -map 0:v:0 \
                     -c:a copy \
@@ -223,7 +216,6 @@ func Encode(inputFile, outputFile string, history *m.History) error {
                     -vf "scale=%d:-2" \
                     "%s" %s`,
 				inputFile,
-				allowThreads,
 				crf,
 				size,
 				outputFile,
