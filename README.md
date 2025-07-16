@@ -3,6 +3,10 @@
 ![Dashboard](img/image.png)
 <!-- ![Settings](img/image2.png) -->
 
+[![Go Version](https://img.shields.io/badge/go-1.24-blue.svg)](https://golang.org/)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Docker Build](https://img.shields.io/badge/docker-build-brightgreen.svg)](https://hub.docker.com/r/kirari04/convertarr)
+
 Convertarr is a powerful, web-based tool designed to automate the process of video conversion. It monitors your specified folders for new video files and encodes them into a more efficient format, saving you valuable storage space without sacrificing quality. With a rich web interface, you can monitor progress, view statistics, and fine-tune every aspect of the encoding process.
 
 ## ✨ Features
