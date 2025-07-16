@@ -47,7 +47,7 @@ func Default(Ctx t.TemplCtx, Title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css\"><script src=\"https://cdn.jsdelivr.net/npm/apexcharts\"></script><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script></head><body><div class=\"container\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"stylesheet\" href=\"/resources/bulma.min.css\"><script src=\"/resources/apexcharts.js\"></script><script src=\"/resources/htmx.min.js\"></script></head><body><div class=\"container\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

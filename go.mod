@@ -16,7 +16,10 @@ require (
 	gorm.io/gorm v1.30.0
 )
 
-require github.com/mattn/go-sqlite3 v1.14.28 // indirect
+require (
+	github.com/mattn/go-sqlite3 v1.14.28 // indirect
+	golang.org/x/time v0.11.0 // indirect
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"embed"
 	"encoder/app"
 	"encoder/handler"
 	"encoder/mware"
@@ -12,8 +13,12 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
+
+//go:embed resources/*
+var resources embed.FS
 
 func Serve() {
 	var Address = fmt.Sprintf("%s:%s", app.Hostname, app.Port)
@@ -24,11 +29,24 @@ func Serve() {
 	e.HidePort = true
 	e.Logger.SetLevel(log.INFO)
 
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+		LogLevel:  log.ERROR,
+	}))
+	e.Use(middleware.Secure())
+	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: 5,
+	}))
+	e.Use(middleware.Timeout())
+
+	e.Use(mware.Caching)
+
 	e.Use(mware.HasBeenSetupRedirect)
 	e.Use(mware.AuthEnabledRedirect)
 
 	// routes
 	e.Static("/imgs", "./imgs")
+	e.StaticFS("/resources", echo.MustSubFS(resources, "resources"))
 	e.GET("/", handler.GetIndex)
 	e.GET("/stats/data", handler.GetStatsData)
 	e.GET("/stats/conversions", handler.GetConversionStats)
