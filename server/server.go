@@ -30,7 +30,8 @@ func Serve() {
 	// routes
 	e.Static("/imgs", "./imgs")
 	e.GET("/", handler.GetIndex)
-	e.GET("/stats/data", handler.GetStatsData) // New route for chart data
+	e.GET("/stats/data", handler.GetStatsData)
+	e.GET("/stats/conversions", handler.GetConversionStats)
 	e.GET("/setup", handler.GetSetup)
 	e.POST("/setup", handler.PostSetup)
 	e.POST("/scanner", handler.PostScanner)

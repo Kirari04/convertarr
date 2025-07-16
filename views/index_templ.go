@@ -204,11 +204,19 @@ func Index(Ctx t.TemplCtx, Title string, longStats bool, savedStorage string, en
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div id=\"resource-chart\"></div></div></div></article>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div id=\"resource-chart\"></div></div><div class=\"box\"><h3 class=\"title is-4\">Conversion Stats (Last 30 Days)</h3><div id=\"conversion-chart\"></div></div></div></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = chartData(longStats, intervalSeconds).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = conversionChartScript().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -366,6 +374,73 @@ func chartData(longStats bool, intervalSeconds int) templ.ComponentScript {
 }`,
 		Call:       templ.SafeScript(`__templ_chartData_80c3`, longStats, intervalSeconds),
 		CallInline: templ.SafeScriptInline(`__templ_chartData_80c3`, longStats, intervalSeconds),
+	}
+}
+
+func conversionChartScript() templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_conversionChartScript_0913`,
+		Function: `function __templ_conversionChartScript_0913(){const renderConversionChart = async () => {
+        try {
+            const response = await fetch('/stats/conversions');
+            if (!response.ok) {
+                console.error("Failed to fetch conversion stats data:", response.statusText);
+                return;
+            }
+            const stats = await response.json();
+
+            const options = {
+                series: [
+                    { name: 'Successful', data: stats.successful, color: '#48c78e' },
+                    { name: 'Failed', data: stats.failed, color: '#f14668' }
+                ],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    stacked: true,
+                },
+                theme: {
+                    mode: 'dark',
+                    palette: 'palette1'
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                    },
+                },
+                stroke: {
+                    width: 1,
+                    colors: ['#fff']
+                },
+                xaxis: {
+                    categories: stats.labels,
+                },
+                yaxis: {
+                    title: {
+                        text: 'Number of Conversions'
+                    },
+                },
+                fill: {
+                    opacity: 1
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'center',
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#conversion-chart"), options);
+            chart.render();
+
+        } catch (error) {
+            console.error("Error rendering conversion chart:", error);
+        }
+    };
+
+    renderConversionChart();
+}`,
+		Call:       templ.SafeScript(`__templ_conversionChartScript_0913`),
+		CallInline: templ.SafeScriptInline(`__templ_conversionChartScript_0913`),
 	}
 }
 
