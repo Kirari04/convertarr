@@ -20,6 +20,7 @@ import (
 //go:embed resources/*
 var resources embed.FS
 
+// this function inits echo, middlewares, routes, and starts the server and waits for interrupt signal
 func Serve() {
 	var Address = fmt.Sprintf("%s:%s", app.Hostname, app.Port)
 

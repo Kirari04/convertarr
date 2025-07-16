@@ -23,7 +23,7 @@ var MaxResourcesHistory = 1000
 var ResourcesInterval = time.Second * 3
 var ResourcesDeleteInterval = time.Minute * 1
 
-var JwtSecret string = "secret"
+var JwtSecret string = ""
 var FilesToEncode []string
 var LastScanNFiles uint64
 var LastFileScan *time.Time
