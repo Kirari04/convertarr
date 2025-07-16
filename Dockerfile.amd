@@ -1,0 +1,32 @@
+# Use golang:1.24-alpine as the builder stage
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add sqlite gcc musl-dev
+
+# Copy source code and build the application
+COPY . .
+RUN go mod tidy
+RUN GOOS=linux CGO_ENABLED=1 GOARCH=amd64 go build -o main.bin main.go
+
+# --- Final Stage ---
+# Use a clean alpine image for the final product
+FROM alpine:latest
+
+WORKDIR /app
+VOLUME /app/database
+VOLUME /app/imgs
+
+# Install runtime dependencies, including FFmpeg and the necessary VA-API drivers for AMD/Intel.
+# - mesa-va-gallium: Provides the VA-API userspace drivers (like radeonsi_drv_video.so).
+# - libva-utils: Provides the 'vainfo' tool, which is useful for debugging.
+RUN apk add --no-cache ffmpeg bash coreutils sqlite mesa-va-gallium libva-utils
+
+# Copy the compiled application from the builder stage
+COPY --from=builder /app/main.bin /app/main.bin
+
+EXPOSE 8080
+
+CMD ["./main.bin", "serve"]

@@ -40,23 +40,7 @@ Convertarr is a powerful, web-based tool designed to automate the process of vid
     -   The history table automatically refreshes to show the latest progress.
     -   **Image Comparison**: Generate a side-by-side comparison image of the original and encoded file to easily verify quality.
 
-## 🚀 Install using Docker
-
-```bash
-docker run -d \
-  --name=convertarr \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Etc/UTC \
-  -p 8080:8080 \
-  -v /path/to/data:/app/database \
-  -v /path/to/comparisonimages:/app/img \
-  -v /path/to/videofiles:/videofiles \
-  --restart unless-stopped \
-  kirari04/convertarr:latest
-```
-
-or using docker-compose
+## 🚀 Install using Docker (No Hardware Acceleration)
 
 ```yaml
 ---
@@ -75,6 +59,57 @@ services:
     ports:
       - 8080:8080
     restart: unless-stopped
+```
+
+### AMD GPU Acceleration (VA-API) using Docker Compose
+
+For AMD GPU support, a special Docker image is required that includes the necessary VA-API drivers.
+
+1.  **Use the custom Docker Compose file below.** This points to the `kirari04/convertarr:amd` image and correctly configures device access.
+
+2.  **Verify your Group IDs (GIDs).** The `group_add` section is critical for permissions. Before running, verify the GIDs for the `video` and `render` groups on your host system with these commands:
+
+    ```
+    getent group video | cut -d: -f3
+    getent group render | cut -d: -f3
+
+    ```
+
+    Update the values in the `docker-compose.yml` file if they are different from the defaults (`44` and `992`).
+
+**`docker-compose.yml` for AMD:**
+
+```yaml
+---
+services:
+  convertarr:
+    image: kirari04/convertarr:amd
+    container_name: convertarr
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      # This environment variable may be needed for certain AMD GPUs.
+      - ROC_ENABLE_PRE_VEGA=1
+    volumes:
+      # Your persistent data volumes.
+      - ./data:/app/database
+      - ./comparisonimages:/app/img
+      - ./videofiles:/videofiles
+    # Pass the GPU device from the host to the container.
+    devices:
+      - /dev/dri:/dev/dri
+    # Add the container to the correct groups using the GIDs from your host system.
+    # This grants the necessary permissions to access the GPU.
+    group_add:
+      - "44"  # GID for 'video'
+      - "992" # GID for 'render'
+    security_opt:
+      - seccomp=unconfined
+
 ```
 
 ## 🔧 Configuration
@@ -103,5 +138,7 @@ templ generate --watch
 docker build --platform linux/amd64 -t kirari04/convertarr:latest --push .
 
 sudo docker buildx build  --platform linux/amd64 -t kirari04/convertarr:latest --sbom=true --provenance=true --push .
+
+sudo docker buildx build  --platform linux/amd64 -t kirari04/convertarr:amd -f Dockerfile.amd --sbom=true --provenance=true --push .
 ```
 
