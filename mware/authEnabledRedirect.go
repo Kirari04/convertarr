@@ -17,7 +17,7 @@ import (
 func AuthEnabledRedirect(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if app.Setting.EnableAuthentication {
-			if c.Request().URL.Path == "/favicon.ico" {
+			if c.Request().URL.Path == "/favicon.ico" || strings.HasPrefix(c.Request().URL.Path, "/resources") {
 				return next(c)
 			}
 			if app.Setting.AuthenticationType == nil {
